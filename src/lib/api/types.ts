@@ -206,3 +206,44 @@ export interface SiteSetting {
   description: string;
   value: string | null;
 }
+
+export type PaymentMode = "test" | "live";
+
+export interface PaymentKeyStatus {
+  /** Masked, e.g. `sk_test_••••4f2a`; null when none is saved. */
+  secretKey: string | null;
+  webhookSecretSet: boolean;
+}
+
+export interface PaymentSettings {
+  mode: PaymentMode;
+  test: PaymentKeyStatus;
+  live: PaymentKeyStatus;
+  enabled: boolean;
+  webhookUrl: string;
+  fromEnvironment: boolean;
+  canStoreKeys: boolean;
+}
+
+export interface PaymentTestResult {
+  ok: boolean;
+  mode: PaymentMode;
+  message: string;
+}
+
+export type OrderStatus = "pending" | "paid" | "expired" | "refunded";
+
+export interface Order {
+  id: string;
+  number: string;
+  status: OrderStatus;
+  email: string | null;
+  totalCents: number;
+  currency: string;
+  mode: PaymentMode;
+  stripeSessionId: string;
+  stripePaymentIntentId: string | null;
+  createdAt: string;
+  paidAt: string | null;
+  items: { id: string; name: string; unitPriceCents: number }[];
+}

@@ -5,13 +5,14 @@ import engagement from "./slices/engagementSlice";
 import episodes from "./slices/episodesSlice";
 import groups from "./slices/groupsSlice";
 import niches from "./slices/nichesSlice";
+import payments from "./slices/paymentsSlice";
 import pages from "./slices/pagesSlice";
 import products from "./slices/productsSlice";
 import users from "./slices/usersSlice";
 
 /** Created once per browser tab by <Providers>. Keep it free of side effects: React may call it twice in dev. */
 export function makeStore() {
-  return configureStore({ reducer: { auth, users, niches, articles, episodes, groups, products, pages, engagement } });
+  return configureStore({ reducer: { auth, users, niches, articles, episodes, groups, products, pages, engagement, payments } });
 }
 
 export type AppStore = ReturnType<typeof makeStore>;

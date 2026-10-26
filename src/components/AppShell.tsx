@@ -10,6 +10,8 @@ import {
   MessageSquare,
   Mic,
   Package,
+  CreditCard,
+  ShoppingBag,
   Settings,
   Tags,
   Users,
@@ -62,6 +64,14 @@ const sections: NavSection[] = [
       { label: "Pages", href: "/site-pages", icon: FileStack, adminOnly: true },
       { label: "Free resources", href: "/free-resources", icon: Gift },
       { label: "Settings", href: "/settings", icon: Settings, adminOnly: true },
+    ],
+  },
+  {
+    title: "Sales",
+    adminOnly: true,
+    items: [
+      { label: "Orders", href: "/orders", icon: ShoppingBag },
+      { label: "Payments", href: "/payments", icon: CreditCard },
     ],
   },
   {
