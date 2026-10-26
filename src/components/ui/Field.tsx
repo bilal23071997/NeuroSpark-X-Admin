@@ -164,13 +164,13 @@ export function FilterSelect({
 }: { label: string } & ComponentProps<"select">) {
   const id = useId();
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex max-w-full min-w-0 flex-col gap-1">
       <label htmlFor={id} className="text-xs font-medium text-soft-white/70">
         {label}
       </label>
       <select
         id={id}
-        className={`rounded-lg border border-soft-white/15 bg-void-black px-3 py-2 text-sm text-soft-white hover:border-soft-white/30 ${className}`}
+        className={`max-w-full rounded-lg border border-soft-white/15 bg-void-black px-3 py-2 text-sm text-soft-white hover:border-soft-white/30 ${className}`}
         {...props}
       >
         {children}

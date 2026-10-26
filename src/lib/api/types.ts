@@ -77,3 +77,173 @@ export interface Episode {
   createdAt: string;
   updatedAt: string;
 }
+
+// ---------- The Vault ----------
+
+/** One node of the group tree: an official category (parentId null) or a sub-group under one. */
+export interface VaultGroup {
+  id: number;
+  slug: string;
+  name: string;
+  description: string;
+  sortOrder: number;
+  parentId: number | null;
+  /** True for the five official categories: never deletable, renamable or movable. */
+  isOfficial: boolean;
+  /** Products in this group, drafts included; a top-level group also counts its sub-groups. */
+  productCount: number;
+  children: VaultGroup[];
+}
+
+export type SectionType = "text" | "bullets" | "faq" | "image";
+
+export interface FaqEntry {
+  question: string;
+  answer: string;
+}
+
+export interface ProductSection {
+  id: string;
+  type: SectionType;
+  title?: string;
+  body?: string;
+  items?: string[];
+  faq?: FaqEntry[];
+  imageUrl?: string;
+  alt?: string;
+}
+
+export interface Product {
+  id: string;
+  slug: string;
+  name: string;
+  summary: string;
+  description: string;
+  /** US cents; 0 means free. */
+  priceCents: number;
+  salePriceCents: number | null;
+  format: string;
+  delivery: string;
+  destination: string | null;
+  forWho: string;
+  included: string[];
+  symbol: string | null;
+  coverImageUrl: string | null;
+  galleryImages: string[];
+  sections: ProductSection[];
+  fileKey: string | null;
+  fileName: string | null;
+  fileSizeBytes: number | null;
+  categoryId: number;
+  category: { id: number; slug: string; name: string; parentId: number | null };
+  status: PublishStatus;
+  publishedAt: string | null;
+  isFeatured: boolean;
+  isPopular: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PresignedUpload {
+  uploadUrl: string;
+  method: "PUT";
+  headers: Record<string, string>;
+  key: string;
+  publicUrl?: string;
+  expiresInSeconds: number;
+}
+
+// ---------- Site pages, forms and settings ----------
+
+export interface SitePage {
+  id: string;
+  slug: string;
+  title: string;
+  body: string;
+  status: PublishStatus;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FreeResource {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  destination: string | null;
+  url: string;
+  isPublished: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  source: string | null;
+  isSubscribed: boolean;
+  subscribedAt: string;
+  unsubscribedAt: string | null;
+}
+
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string | null;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface SiteSetting {
+  key: "contactEmail" | "linkverseUrl" | "whatsappUrl" | "telegramUrl";
+  label: string;
+  /** `email` or `url`. */
+  kind: string;
+  description: string;
+  value: string | null;
+}
+
+export type PaymentMode = "test" | "live";
+
+export interface PaymentKeyStatus {
+  /** Masked, e.g. `sk_test_••••4f2a`; null when none is saved. */
+  secretKey: string | null;
+  webhookSecretSet: boolean;
+}
+
+export interface PaymentSettings {
+  mode: PaymentMode;
+  test: PaymentKeyStatus;
+  live: PaymentKeyStatus;
+  enabled: boolean;
+  webhookUrl: string;
+  fromEnvironment: boolean;
+  canStoreKeys: boolean;
+}
+
+export interface PaymentTestResult {
+  ok: boolean;
+  mode: PaymentMode;
+  message: string;
+}
+
+export type OrderStatus = "pending" | "paid" | "expired" | "refunded";
+
+export interface Order {
+  id: string;
+  number: string;
+  status: OrderStatus;
+  email: string | null;
+  totalCents: number;
+  currency: string;
+  mode: PaymentMode;
+  stripeSessionId: string;
+  stripePaymentIntentId: string | null;
+  createdAt: string;
+  paidAt: string | null;
+  items: { id: string; name: string; unitPriceCents: number }[];
+}
