@@ -10,7 +10,9 @@ import { getSeriesName } from "@/lib/podcast-series";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchArticles } from "@/store/slices/articlesSlice";
 import { fetchEpisodes } from "@/store/slices/episodesSlice";
+import { fetchMessages, fetchSubscribers } from "@/store/slices/engagementSlice";
 import { fetchNiches } from "@/store/slices/nichesSlice";
+import { fetchProducts } from "@/store/slices/productsSlice";
 import { fetchUsers } from "@/store/slices/usersSlice";
 
 function Stat({ label, value, href }: { label: string; value: number | string; href: string }) {
@@ -32,13 +34,21 @@ export default function DashboardPage() {
   const episodes = useAppSelector((state) => state.episodes);
   const niches = useAppSelector((state) => state.niches);
   const users = useAppSelector((state) => state.users);
+  const products = useAppSelector((state) => state.products);
+  const messages = useAppSelector((state) => state.engagement.messages);
+  const subscribers = useAppSelector((state) => state.engagement.subscribers);
   const isAdmin = user?.role === "admin";
 
   useEffect(() => {
     dispatch(fetchArticles());
     dispatch(fetchEpisodes());
     dispatch(fetchNiches());
-    if (isAdmin) dispatch(fetchUsers());
+    if (isAdmin) {
+      dispatch(fetchUsers());
+      dispatch(fetchProducts());
+      dispatch(fetchMessages());
+      dispatch(fetchSubscribers());
+    }
   }, [dispatch, isAdmin]);
 
   const loading = articles.status !== "succeeded" || episodes.status !== "succeeded";
@@ -59,6 +69,11 @@ export default function DashboardPage() {
             <ButtonLink href="/episodes/new" variant="secondary">
               New episode
             </ButtonLink>
+            {isAdmin && (
+              <ButtonLink href="/vault/products/new" variant="secondary">
+                New product
+              </ButtonLink>
+            )}
           </>
         }
       />
@@ -76,6 +91,18 @@ export default function DashboardPage() {
             <Stat label="Published episodes" value={published(episodes.items)} href="/episodes" />
             <Stat label="Draft episodes" value={draftEpisodes.length} href="/episodes" />
             {isAdmin && <Stat label="Staff accounts" value={users.items.length} href="/users" />}
+            {isAdmin && products.status === "succeeded" && (
+              <>
+                <Stat label="Published products" value={published(products.items)} href="/vault/products" />
+                <Stat label="Draft products" value={products.items.filter((p) => p.status === "draft").length} href="/vault/products" />
+              </>
+            )}
+            {isAdmin && messages.status === "succeeded" && (
+              <Stat label="Unread messages" value={messages.items.filter((m) => !m.isRead).length} href="/messages" />
+            )}
+            {isAdmin && subscribers.status === "succeeded" && (
+              <Stat label="Newsletter subscribers" value={subscribers.items.filter((s) => s.isSubscribed).length} href="/newsletter" />
+            )}
           </div>
 
           <div className="mt-10 grid gap-6 lg:grid-cols-2">

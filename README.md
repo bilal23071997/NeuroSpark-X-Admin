@@ -1,6 +1,6 @@
 # NeuroSpark X Admin
 
-The admin portal for the NeuroSpark X website content: Insights articles and niches, Listen episodes, and staff accounts. It talks to the NeuroSpark X API (`NeuroSpark-X-Api`); there is no server-side code in this app.
+The admin portal for the NeuroSpark X website: Insights articles and niches, Listen episodes, The Vault (products, groups), site pages, free resources, newsletter, contact messages, site settings, and staff accounts. It talks to the NeuroSpark X API (`NeuroSpark-X-Api`); there is no server-side code in this app.
 
 Next.js (App Router) used as a client-side app · TypeScript · Tailwind · Axios · Redux Toolkit · React Hook Form + Zod.
 
@@ -24,8 +24,14 @@ Sign in with an account the API knows about (the first admin comes from the API'
 | Niches (create/edit/delete) | admin, editor |
 | Episodes (list, filters, create/edit, publish/unpublish, delete) | admin, editor |
 | Users (create staff, edit name/role/password, activate/deactivate) | admin only |
+| Vault > Products (list + filters, create/edit, images, gallery, page sections, private file, publish/unpublish, delete) | admin only |
+| Vault > Groups (the 5 official categories, locked; add, edit, drag to reorder and delete sub-groups) | admin only |
+| Site > Pages (privacy, terms and other plain-text pages, with preview) | admin only |
+| Site > Free resources (lead magnets) | admin, editor |
+| Site > Settings (contact email, LinkVerse, WhatsApp, Telegram links) | admin only |
+| Audience > Newsletter (list, filter, unsubscribe, CSV export, delete) and Messages (read/unread, delete) | admin only |
 
-Editors never see the Users screen and the app never calls the admin-only API routes for them (those would answer 403). If any request is refused, the API's message is shown on the page.
+Editors never see the admin-only screens (Users, Vault, Pages, Settings, Newsletter, Messages): the links are hidden, opening one by address shows an "Admin only" note, and the app never calls the admin-only API routes for them (those would answer 403). If any request is refused, the API's message is shown on the page.
 
 ## How it is built
 
@@ -33,6 +39,17 @@ Editors never see the Users screen and the app never calls the admin-only API ro
 - `src/store/slices/*` — one Redux slice per module (auth, users, niches, articles, episodes), all with the same loading/error pattern (`status`: idle / loading / succeeded / failed, plus an `error` message). Thunks reject with a readable message string (`src/store/helpers.ts`).
 - `src/components/AppShell.tsx` — the signed-in layout (sidebar, mobile drawer) and the route guard.
 - `src/components/ui/*` — shared buttons, fields, dialogs and badges.
+
+## Uploads and the Vault
+
+- **Images and the paid file are uploaded straight from the browser to the bucket.** The app asks the API for a short-lived signed URL (`POST /admin/uploads/presign`) and then `PUT`s the file there with plain `fetch` (never through the shared Axios instance, so our sign-in token is not sent to the bucket). Limits match the API: images PNG/JPEG/WebP/GIF up to 5 MB; product files (PDF, ZIP, EPUB, Office, CSV, MP3/M4A/WAV, MP4) up to 1 GB.
+- **The bucket needs a CORS rule** allowing `PUT` from the admin's address (and the `Content-Type` header), otherwise browsers block the upload and the app says so.
+- **Until storage is configured** the API answers 503 and the app shows "File storage is not set up yet — ask the developer to configure it". Cover, gallery and section images can still be set by pasting an https address.
+- The paid file is stored privately; only its name and size are public. Nothing downloads it until checkout exists.
+- **Prices** are typed in dollars and sent as cents; the sale price must be lower than the price.
+- **Reordering** (sub-groups, product sections, gallery images) works by dragging the handle with a pointer, by keyboard (focus the handle, press Space, use the arrow keys, press Space again), or with the up/down buttons. Powered by @dnd-kit.
+- **Page sections** are text, bullet list, FAQ and image blocks. The product page itself keeps one fixed theme on the website; the admin only chooses what goes in it and in what order.
+- **Site pages** are plain text: a blank line starts a new paragraph, and a paragraph starting with `## ` is a heading.
 
 ## Things to know
 

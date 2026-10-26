@@ -29,8 +29,10 @@ Sibling repos (each has its own `CLAUDE.md`):
 
 ## Built / not built
 
-Built: login, dashboard, change password, articles, niches, episodes, users (admin only).
-Not built (the API endpoints exist): Vault products, free resources, newsletter subscribers, contact messages, site settings. Add screens for them only when asked, following the existing slice + screen pattern, and don't link screens that don't exist.
+Built: login, dashboard, change password, articles, niches, episodes, users (admin only), Vault products and groups (admin only), site pages (admin only), free resources, newsletter subscribers, contact messages, site settings (admin only). New screens follow the existing slice + screen pattern; don't link screens that don't exist.
+Not built: cart/checkout/orders (the API has none), a download link for the paid file, pagination, a rich-text editor. Uploads call the API's presign endpoint, but no bucket is configured yet, so a real upload has only been tested against a mocked bucket.
+
+Vault specifics: the five official groups are locked (only their description is editable), sub-groups are one level deep, prices are typed in dollars and sent as cents, page sections are text/bullets/faq/image blocks reordered with `SortableList` (@dnd-kit, with up/down buttons as the accessible fallback), and PUTs to the bucket use plain `fetch` so the Bearer token never leaves for a third-party host. Screens whose API routes are admin-only are wrapped in `RequireAdmin`. List slices ignore out-of-order responses (`latestListRequest`) so a slow older filter can't overwrite a newer one; do the same for any new filtered list.
 
 ## Look and feel
 

@@ -11,6 +11,8 @@ import { LoadingBlock } from "./ui/Spinner";
 interface NavItem {
   label: string;
   href: string;
+  /** Hidden for editors: the API answers 403 for these screens. */
+  adminOnly?: boolean;
 }
 
 interface NavSection {
@@ -30,6 +32,30 @@ const sections: NavSection[] = [
     ],
   },
   { title: "Listen", items: [{ label: "Episodes", href: "/episodes" }] },
+  {
+    title: "The Vault",
+    adminOnly: true,
+    items: [
+      { label: "Products", href: "/vault/products" },
+      { label: "Groups", href: "/vault/groups" },
+    ],
+  },
+  {
+    title: "Site",
+    items: [
+      { label: "Pages", href: "/site-pages", adminOnly: true },
+      { label: "Free resources", href: "/free-resources" },
+      { label: "Settings", href: "/settings", adminOnly: true },
+    ],
+  },
+  {
+    title: "Audience",
+    adminOnly: true,
+    items: [
+      { label: "Newsletter", href: "/newsletter" },
+      { label: "Messages", href: "/messages" },
+    ],
+  },
   { title: "Admin", adminOnly: true, items: [{ label: "Users", href: "/users" }] },
 ];
 
@@ -42,7 +68,7 @@ function NavLinks({ onNavigate }: { onNavigate: () => void }) {
   const role = useAppSelector((state) => state.auth.user?.role);
 
   return (
-    <nav aria-label="Main" className="flex flex-col gap-6">
+    <nav aria-label="Main" className="flex flex-col gap-5">
       {sections
         .filter((section) => !section.adminOnly || role === "admin")
         .map((section) => (
@@ -53,7 +79,9 @@ function NavLinks({ onNavigate }: { onNavigate: () => void }) {
               </p>
             )}
             <ul className="flex flex-col gap-1">
-              {section.items.map((item) => {
+              {section.items
+                .filter((item) => !item.adminOnly || role === "admin")
+                .map((item) => {
                 const active = isActive(pathname, item.href);
                 return (
                   <li key={item.href}>
@@ -61,7 +89,7 @@ function NavLinks({ onNavigate }: { onNavigate: () => void }) {
                       href={item.href}
                       onClick={onNavigate}
                       aria-current={active ? "page" : undefined}
-                      className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors motion-reduce:transition-none ${
+                      className={`block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors motion-reduce:transition-none ${
                         active
                           ? "bg-electric-indigo/20 text-soft-white"
                           : "text-soft-white/70 hover:bg-soft-white/5 hover:text-soft-white"
