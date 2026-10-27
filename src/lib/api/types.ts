@@ -213,6 +213,8 @@ export interface PaymentKeyStatus {
   /** Masked, e.g. `sk_test_••••4f2a`; null when none is saved. */
   secretKey: string | null;
   webhookSecretSet: boolean;
+  /** Masked, e.g. pk_test_••••4f2a; null when none is saved. */
+  publishableKey: string | null;
 }
 
 export interface PaymentSettings {

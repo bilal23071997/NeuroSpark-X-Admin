@@ -35,18 +35,20 @@ function KeysForm({
   const dispatch = useAppDispatch();
   const [secretKey, setSecretKey] = useState("");
   const [webhookSecret, setWebhookSecret] = useState("");
+  const [publishableKey, setPublishableKey] = useState("");
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const nothingToSave = !secretKey.trim() && !webhookSecret.trim();
-  const hasKeys = Boolean(status.secretKey || status.webhookSecretSet);
+  const nothingToSave = !secretKey.trim() && !webhookSecret.trim() && !publishableKey.trim();
+  const hasKeys = Boolean(status.secretKey || status.webhookSecretSet || status.publishableKey);
 
   async function save() {
     setError(null);
     setSaved(false);
     const key = secretKey.trim();
     const hook = webhookSecret.trim();
+    const pub = publishableKey.trim();
     const wrongPrefix = mode === "test" ? !/^(sk|rk)_test_/.test(key) : !/^(sk|rk)_live_/.test(key);
     if (key && wrongPrefix) {
       setError(`A ${mode} secret key starts with ${prefixes[mode]}.`);
@@ -56,13 +58,18 @@ function KeysForm({
       setError("A webhook signing secret starts with whsec_.");
       return;
     }
+    if (pub && !pub.startsWith(`pk_${mode}_`)) {
+      setError(`A ${mode} publishable key starts with pk_${mode}_.`);
+      return;
+    }
     setBusy(true);
     try {
       await dispatch(
-        savePaymentSettings({ [mode]: { secretKey: key || undefined, webhookSecret: hook || undefined } }),
+        savePaymentSettings({ [mode]: { secretKey: key || undefined, webhookSecret: hook || undefined, publishableKey: pub || undefined } }),
       ).unwrap();
       setSecretKey("");
       setWebhookSecret("");
+      setPublishableKey("");
       setSaved(true);
     } catch (err) {
       setError(messageOf(err));
@@ -75,7 +82,7 @@ function KeysForm({
     <Panel className="p-6">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-heading text-lg font-semibold capitalize">{mode} keys</h2>
-        {status.secretKey && status.webhookSecretSet ? (
+        {status.secretKey && status.webhookSecretSet && status.publishableKey ? (
           <Badge tone="teal">Saved</Badge>
         ) : (
           <Badge tone="amber">Incomplete</Badge>
@@ -105,6 +112,23 @@ function KeysForm({
           value={secretKey}
           onChange={(event) => {
             setSecretKey(event.target.value);
+            setSaved(false);
+          }}
+        />
+        <TextField
+          label="Publishable key"
+          autoComplete="off"
+          spellCheck={false}
+          disabled={locked}
+          placeholder={status.publishableKey ?? `pk_${mode}_…`}
+          hint={
+            status.publishableKey
+              ? "Saved. Type a new one only if you want to replace it."
+              : "Stripe dashboard > Developers > API keys. This one is public; it shows the payment form on your website."
+          }
+          value={publishableKey}
+          onChange={(event) => {
+            setPublishableKey(event.target.value);
             setSaved(false);
           }}
         />
@@ -207,7 +231,7 @@ function PaymentsScreen() {
     <>
       <PageHeader
         title="Payments"
-        description="Connect your Stripe account so customers can pay at checkout. Card details never touch this site: buyers pay on Stripe's own page."
+        description="Connect your Stripe account so customers can pay at checkout. Card details never touch this site: the payment form is Stripe's own, shown inside your website."
       />
 
       {(error || actionError) && <Alert className="mb-5">{actionError ?? error}</Alert>}
@@ -296,7 +320,7 @@ function PaymentsScreen() {
                 </div>
               </li>
               <li>
-                Choose the events <code>checkout.session.completed</code> and <code>checkout.session.expired</code>.
+                Choose these events: <code>checkout.session.completed</code>, <code>checkout.session.expired</code>, <code>checkout.session.async_payment_succeeded</code>, <code>checkout.session.async_payment_failed</code> and <code>charge.refunded</code>.
               </li>
               <li>
                 Copy the <strong>Signing secret</strong> (starts with <code>whsec_</code>) into the form below.
