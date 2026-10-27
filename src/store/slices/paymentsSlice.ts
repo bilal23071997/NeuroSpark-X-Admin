@@ -12,6 +12,7 @@ import { apiThunk, emptyDetail, emptyList, type DetailState, type ListState } fr
 export interface PaymentKeysInput {
   secretKey?: string;
   webhookSecret?: string;
+  publishableKey?: string;
 }
 
 export interface PaymentSettingsInput {

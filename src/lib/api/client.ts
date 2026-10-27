@@ -2,7 +2,8 @@ import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { clearTokens, getAccessToken, getRefreshToken, setTokens } from "./tokens";
 import type { Tokens } from "./types";
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+export const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "https://spark-api.tahirali.site";
 
 /** The one shared Axios instance every request goes through. */
 export const api = axios.create({ baseURL: API_URL });
