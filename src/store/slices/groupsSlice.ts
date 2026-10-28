@@ -3,11 +3,12 @@ import { api } from "@/lib/api/client";
 import type { VaultGroup } from "@/lib/api/types";
 import { apiThunk, emptyList, type ListState } from "../helpers";
 
-export interface SubGroupInput {
+export interface GroupInput {
   name: string;
   slug?: string;
   description?: string;
-  parentId: number;
+  /** The group it sits under; leave out to create a new top-level group. */
+  parentId?: number;
 }
 
 export interface GroupPatch {
@@ -22,7 +23,7 @@ const loadTree = async () => (await api.get<VaultGroup[]>("/admin/vault/categori
 export const fetchGroups = apiThunk("groups/fetch", loadTree);
 
 // Every change reloads the tree: product counts and ordering are decided by the API.
-export const createSubGroup = apiThunk("groups/create", async (body: SubGroupInput) => {
+export const createGroup = apiThunk("groups/create", async (body: GroupInput) => {
   await api.post("/admin/vault/categories", body);
   return loadTree();
 });
@@ -66,7 +67,7 @@ const groupsSlice = createSlice({
         state.status = "failed";
         state.error = action.payload ?? "Could not load the groups.";
       });
-    for (const thunk of [fetchGroups, createSubGroup, updateGroup, deleteGroup, reorderSubGroups]) {
+    for (const thunk of [fetchGroups, createGroup, updateGroup, deleteGroup, reorderSubGroups]) {
       builder.addCase(thunk.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.error = null;

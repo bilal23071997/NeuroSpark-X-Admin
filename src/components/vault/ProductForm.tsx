@@ -17,6 +17,7 @@ import Alert from "@/components/ui/Alert";
 import Button from "@/components/ui/Button";
 import { CheckboxField, SelectField, TextAreaField, TextField } from "@/components/ui/Field";
 import { Panel } from "@/components/ui/PageHeader";
+import RichTextEditor from "@/components/ui/RichTextEditor";
 import SortableList, { type RowControls } from "@/components/ui/SortableList";
 import type { Product, SectionType, VaultGroup } from "@/lib/api/types";
 import { emptyToUndefined } from "@/lib/format";
@@ -264,14 +265,20 @@ function SectionCard({
         />
 
         {section.type === "text" && (
-          <TextAreaField
-            label="Text"
-            required
-            hint="Leave a blank line between paragraphs."
-            className="min-h-32"
-            error={messageAt(sectionErrors?.body)}
-            {...register(`sections.${index}.body` as const)}
-          />
+<Controller
+          control={control}
+          name={`sections.${index}.body` as const}
+          render={({ field }) => (
+            <RichTextEditor
+              label="Text"
+              required
+              minHeight="min-h-40"
+              error={messageAt(sectionErrors?.body)}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
         )}
 
         {section.type === "bullets" && (
@@ -527,12 +534,18 @@ export default function ProductForm({ product, groups }: { product?: Product; gr
           error={errors.summary?.message}
           {...register("summary")}
         />
-        <TextAreaField
-          label="Description"
-          required
-          className="min-h-40"
-          error={errors.description?.message}
-          {...register("description")}
+<Controller
+          control={control}
+          name="description"
+          render={({ field }) => (
+            <RichTextEditor
+              label="Description"
+              required
+              error={errors.description?.message}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
         />
       </Panel>
 

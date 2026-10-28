@@ -4,12 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import Alert from "@/components/ui/Alert";
 import Button from "@/components/ui/Button";
 import { CheckboxField, SelectField, TextAreaField, TextField } from "@/components/ui/Field";
 import { Panel } from "@/components/ui/PageHeader";
+import RichTextEditor from "@/components/ui/RichTextEditor";
 import type { Article } from "@/lib/api/types";
 import { emptyToUndefined } from "@/lib/format";
 import { optionalSlug } from "@/lib/validation";
@@ -22,9 +23,7 @@ const schema = z.object({
   title: z.string().trim().min(1, "Enter a title."),
   slug: optionalSlug,
   excerpt: z.string().trim().min(1, "Enter a short excerpt."),
-  body: z
-    .array(z.object({ text: z.string() }))
-    .refine((paragraphs) => paragraphs.some((p) => p.text.trim() !== ""), "Write at least one paragraph."),
+  body: z.string().trim().min(1, "Write the article text."),
   nicheId: z.string().min(1, "Choose a niche."),
   isFeatured: z.boolean(),
   seoTitle: z.string(),
@@ -37,7 +36,8 @@ function toFormValues(article?: Article): FormValues {
     title: article?.title ?? "",
     slug: article?.slug ?? "",
     excerpt: article?.excerpt ?? "",
-    body: (article?.body.length ? article.body : [""]).map((text) => ({ text })),
+    // Older articles were saved as paragraphs: a blank line between them is the same thing in Markdown.
+    body: article?.body.join("\n\n") ?? "",
     nicheId: article?.nicheId ?? "",
     isFeatured: article?.isFeatured ?? false,
     seoTitle: article?.seoTitle ?? "",
@@ -61,8 +61,6 @@ export default function ArticleForm({ article }: { article?: Article }) {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: toFormValues(article) });
 
-  const paragraphs = useFieldArray({ control, name: "body" });
-
   useEffect(() => {
     dispatch(fetchNiches());
   }, [dispatch]);
@@ -70,7 +68,7 @@ export default function ArticleForm({ article }: { article?: Article }) {
   async function onSubmit(values: FormValues) {
     setSubmitError(null);
     setSaved(false);
-    const body = values.body.map((p) => p.text.trim()).filter(Boolean);
+    const body = [values.body.trim()];
     try {
       if (article) {
         const updated = await dispatch(
@@ -112,8 +110,6 @@ export default function ArticleForm({ article }: { article?: Article }) {
     }
   }
 
-  const bodyError =
-    (errors.body as { message?: string } | undefined)?.message ?? errors.body?.root?.message;
   const noNiches = niches.status === "succeeded" && niches.items.length === 0;
 
   return (
@@ -157,52 +153,21 @@ export default function ArticleForm({ article }: { article?: Article }) {
       </Panel>
 
       <Panel className="p-6">
-        <h2 className="text-base font-semibold">Body</h2>
-        <p className="mt-1 text-sm text-soft-white/70">Write the article as paragraphs, in order.</p>
-        <ol className="mt-5 flex flex-col gap-5">
-          {paragraphs.fields.map((field, index) => (
-            <li key={field.id} className="flex flex-col gap-2">
-              <TextAreaField
-                label={`Paragraph ${index + 1}`}
-                className="min-h-32"
-                {...register(`body.${index}.text` as const)}
-              />
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => paragraphs.move(index, index - 1)}
-                  disabled={index === 0}
-                  aria-label={`Move paragraph ${index + 1} up`}
-                >
-                  Move up
-                </Button>
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => paragraphs.move(index, index + 1)}
-                  disabled={index === paragraphs.fields.length - 1}
-                  aria-label={`Move paragraph ${index + 1} down`}
-                >
-                  Move down
-                </Button>
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={() => paragraphs.remove(index)}
-                  disabled={paragraphs.fields.length === 1}
-                  aria-label={`Remove paragraph ${index + 1}`}
-                >
-                  Remove
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ol>
-        {bodyError && <p className="mt-3 text-xs text-danger">{bodyError}</p>}
-        <Button variant="secondary" className="mt-5" onClick={() => paragraphs.append({ text: "" })}>
-          Add paragraph
-        </Button>
+        <Controller
+          control={control}
+          name="body"
+          render={({ field }) => (
+            <RichTextEditor
+              label="Body"
+              required
+              minHeight="min-h-96"
+              hint="Use the toolbar for headings, bold, lists and links. Headings are optional."
+              error={errors.body?.message}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
       </Panel>
 
       <Panel className="flex flex-col gap-5 p-6">

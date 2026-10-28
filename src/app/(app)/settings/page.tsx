@@ -97,7 +97,7 @@ function SettingsScreen() {
   return (
     <>
       <PageHeader
-        title="Site settings"
+        title="General settings"
         description="Contact details and links shown on the website. Nothing is shown for a setting that is empty."
       />
 

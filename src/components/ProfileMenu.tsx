@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, KeyRound, LogOut } from "lucide-react";
+import { ChevronsUpDown, KeyRound, LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -74,6 +74,21 @@ export default function ProfileMenu({ onNavigate }: { onNavigate: () => void }) 
           </div>
 
           <ul className="flex flex-col gap-1 border-t border-soft-white/15 p-2">
+            {user.role === "admin" && (
+              <li>
+                <Link
+                  href="/settings"
+                  onClick={() => {
+                    setOpen(false);
+                    onNavigate();
+                  }}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-soft-white/90 hover:bg-soft-white/10 hover:text-soft-white"
+                >
+                  <Settings aria-hidden strokeWidth={1.75} className="size-4.5 shrink-0 text-indigo-text" />
+                  Settings
+                </Link>
+              </li>
+            )}
             <li>
               <Link
                 href="/password"

@@ -10,9 +10,7 @@ import {
   MessageSquare,
   Mic,
   Package,
-  CreditCard,
   ShoppingBag,
-  Settings,
   Tags,
   Users,
   type LucideIcon,
@@ -63,7 +61,6 @@ const sections: NavSection[] = [
     items: [
       { label: "Pages", href: "/site-pages", icon: FileStack, adminOnly: true },
       { label: "Free resources", href: "/free-resources", icon: Gift },
-      { label: "Settings", href: "/settings", icon: Settings, adminOnly: true },
     ],
   },
   {
@@ -71,7 +68,6 @@ const sections: NavSection[] = [
     adminOnly: true,
     items: [
       { label: "Orders", href: "/orders", icon: ShoppingBag },
-      { label: "Payments", href: "/payments", icon: CreditCard },
     ],
   },
   {
