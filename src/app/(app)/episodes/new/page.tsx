@@ -18,7 +18,7 @@ export default function NewEpisodePage() {
     dispatch(fetchEpisodes());
   }, [dispatch]);
 
-  const nextNumber = items.reduce((max, episode) => Math.max(max, episode.episodeNumber), 0) + 1;
+  const nextNumber = items.reduce((max, episode) => Math.max(max, episode.EpisodeNumber), 0) + 1;
 
   return (
     <>

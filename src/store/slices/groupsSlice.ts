@@ -51,10 +51,10 @@ const groupsSlice = createSlice({
   reducers: {
     /** Shows a new order straight away while the request is on its way. */
     previewSubGroupOrder(state, action: { payload: { parentId: number; ids: number[] } }) {
-      const parent = state.items.find((group) => group.id === action.payload.parentId);
+      const parent = state.items.find((group) => group.Id === action.payload.parentId);
       if (!parent) return;
-      const byId = new Map(parent.children.map((child) => [child.id, child]));
-      parent.children = action.payload.ids.flatMap((id) => (byId.has(id) ? [byId.get(id)!] : []));
+      const byId = new Map(parent.Children.map((child) => [child.Id, child]));
+      parent.Children = action.payload.ids.flatMap((id) => (byId.has(id) ? [byId.get(id)!] : []));
     },
   },
   extraReducers: (builder) => {

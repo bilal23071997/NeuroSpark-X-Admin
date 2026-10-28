@@ -37,10 +37,10 @@ function NicheForm({ niche, onDone }: { niche: Niche | null; onDone: () => void 
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: niche?.name ?? "",
-      slug: niche?.slug ?? "",
-      description: niche?.description ?? "",
-      sortOrder: String(niche?.sortOrder ?? 0),
+      name: niche?.Name ?? "",
+      slug: niche?.Slug ?? "",
+      description: niche?.Description ?? "",
+      sortOrder: String(niche?.SortOrder ?? 0),
     },
   });
 
@@ -53,7 +53,7 @@ function NicheForm({ niche, onDone }: { niche: Niche | null; onDone: () => void 
       sortOrder: Number(values.sortOrder),
     };
     try {
-      if (niche) await dispatch(updateNiche({ id: niche.id, body })).unwrap();
+      if (niche) await dispatch(updateNiche({ id: niche.Id, body })).unwrap();
       else await dispatch(createNiche(body)).unwrap();
       onDone();
     } catch (error) {
@@ -138,15 +138,15 @@ export default function NichesPage() {
               </thead>
               <tbody className="divide-y divide-soft-white/10">
                 {items.map((niche) => (
-                  <tr key={niche.id} className="align-middle">
+                  <tr key={niche.Id} className="align-middle">
                     <td className="px-5 py-4">
-                      <span className="font-medium">{niche.name}</span>
-                      <p className="mt-0.5 text-xs text-soft-white/60">/{niche.slug}</p>
+                      <span className="font-medium">{niche.Name}</span>
+                      <p className="mt-0.5 text-xs text-soft-white/60">/{niche.Slug}</p>
                     </td>
                     <td className="hidden max-w-sm px-5 py-4 text-soft-white/80 md:table-cell">
-                      {niche.description || "—"}
+                      {niche.Description || "—"}
                     </td>
-                    <td className="px-5 py-4 text-soft-white/80">{niche.sortOrder}</td>
+                    <td className="px-5 py-4 text-soft-white/80">{niche.SortOrder}</td>
                     <td className="px-5 py-4">
                       <div className="flex justify-end gap-2">
                         <Button size="sm" variant="secondary" onClick={() => setEditing(niche)}>
@@ -171,7 +171,7 @@ export default function NichesPage() {
         title={editing ? "Edit niche" : "New niche"}
       >
         {/* Keyed so each open starts from the right niche's values. */}
-        <NicheForm key={editing?.id ?? "new"} niche={editing ?? null} onDone={() => setEditing(undefined)} />
+        <NicheForm key={editing?.Id ?? "new"} niche={editing ?? null} onDone={() => setEditing(undefined)} />
       </Modal>
 
       <ConfirmDialog
@@ -179,10 +179,10 @@ export default function NichesPage() {
         title="Delete this niche?"
         confirmLabel="Delete niche"
         onClose={() => setToDelete(null)}
-        onConfirm={() => dispatch(deleteNiche(toDelete!.id)).unwrap()}
+        onConfirm={() => dispatch(deleteNiche(toDelete!.Id)).unwrap()}
       >
         <p>
-          <strong>{toDelete?.name}</strong> will be deleted. A niche that still has articles can&apos;t be deleted:
+          <strong>{toDelete?.Name}</strong> will be deleted. A niche that still has articles can&apos;t be deleted:
           move or delete those articles first.
         </p>
       </ConfirmDialog>

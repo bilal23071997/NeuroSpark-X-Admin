@@ -43,10 +43,10 @@ function ProductsScreen() {
   }, [dispatch, statusFilter, groupFilter]);
 
   async function togglePublish(product: Product) {
-    setBusyId(product.id);
+    setBusyId(product.Id);
     setActionError(null);
     try {
-      await dispatch((product.status === "published" ? unpublishProduct : publishProduct)(product.id)).unwrap();
+      await dispatch((product.Status === "published" ? unpublishProduct : publishProduct)(product.Id)).unwrap();
     } catch (err) {
       setActionError(messageOf(err));
     } finally {
@@ -77,11 +77,11 @@ function ProductsScreen() {
         <FilterSelect label="Group" value={groupFilter} onChange={(event) => setGroupFilter(event.target.value)}>
           <option value="">All groups</option>
           {groups.map((category) => (
-            <optgroup key={category.id} label={category.name}>
-              <option value={category.id}>{category.name} (including sub-groups)</option>
-              {category.children.map((child) => (
-                <option key={child.id} value={child.id}>
-                  {category.name} › {child.name}
+            <optgroup key={category.Id} label={category.Name}>
+              <option value={category.Id}>{category.Name} (including sub-groups)</option>
+              {category.Children.map((child) => (
+                <option key={child.Id} value={child.Id}>
+                  {category.Name} › {child.Name}
                 </option>
               ))}
             </optgroup>
@@ -117,52 +117,52 @@ function ProductsScreen() {
               </thead>
               <tbody className="divide-y divide-soft-white/10">
                 {items.map((product) => (
-                  <tr key={product.id} className="align-middle">
+                  <tr key={product.Id} className="align-middle">
                     <td className="px-5 py-4">
-                      <Link href={`/vault/products/${product.id}`} className="font-medium hover:text-indigo-text">
-                        {product.name}
+                      <Link href={`/vault/products/${product.Id}`} className="font-medium hover:text-indigo-text">
+                        {product.Name}
                       </Link>
-                      {product.isFeatured && (
+                      {product.IsFeatured && (
                         <span className="ml-2 align-middle">
                           <Badge tone="violet">Featured</Badge>
                         </span>
                       )}
-                      {product.isPopular && (
+                      {product.IsPopular && (
                         <span className="ml-2 align-middle">
                           <Badge tone="teal">Popular</Badge>
                         </span>
                       )}
-                      <p className="mt-0.5 text-xs text-soft-white/60">/{product.slug}</p>
+                      <p className="mt-0.5 text-xs text-soft-white/60">/{product.Slug}</p>
                     </td>
-                    <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">{product.category.name}</td>
+                    <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">{product.Category.Name}</td>
                     <td className="hidden px-5 py-4 text-soft-white/80 sm:table-cell">
-                      {product.salePriceCents !== null ? (
+                      {product.SalePriceCents !== null ? (
                         <>
-                          <span className="text-soft-white">{formatPrice(product.salePriceCents)}</span>{" "}
-                          <span className="text-soft-white/60 line-through">{formatPrice(product.priceCents)}</span>
+                          <span className="text-soft-white">{formatPrice(product.SalePriceCents)}</span>{" "}
+                          <span className="text-soft-white/60 line-through">{formatPrice(product.PriceCents)}</span>
                         </>
                       ) : (
-                        formatPrice(product.priceCents)
+                        formatPrice(product.PriceCents)
                       )}
                     </td>
                     <td className="px-5 py-4">
-                      <PublishBadge status={product.status} />
+                      <PublishBadge status={product.Status} />
                     </td>
                     <td className="hidden px-5 py-4 text-soft-white/80 lg:table-cell">
-                      {formatDate(product.publishedAt)}
+                      {formatDate(product.PublishedAt)}
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex flex-wrap justify-end gap-2">
-                        <ButtonLink href={`/vault/products/${product.id}`} variant="secondary" size="sm">
+                        <ButtonLink href={`/vault/products/${product.Id}`} variant="secondary" size="sm">
                           Edit
                         </ButtonLink>
                         <Button
                           size="sm"
                           variant="secondary"
-                          loading={busyId === product.id}
+                          loading={busyId === product.Id}
                           onClick={() => togglePublish(product)}
                         >
-                          {product.status === "published" ? "Unpublish" : "Publish"}
+                          {product.Status === "published" ? "Unpublish" : "Publish"}
                         </Button>
                         <Button size="sm" variant="danger" onClick={() => setToDelete(product)}>
                           Delete
@@ -182,10 +182,10 @@ function ProductsScreen() {
         title="Delete this product?"
         confirmLabel="Delete product"
         onClose={() => setToDelete(null)}
-        onConfirm={() => dispatch(deleteProduct(toDelete!.id)).unwrap()}
+        onConfirm={() => dispatch(deleteProduct(toDelete!.Id)).unwrap()}
       >
         <p>
-          <strong>{toDelete?.name}</strong> will be deleted permanently. This can&apos;t be undone. A file attached
+          <strong>{toDelete?.Name}</strong> will be deleted permanently. This can&apos;t be undone. A file attached
           to it stays in storage.
         </p>
       </ConfirmDialog>

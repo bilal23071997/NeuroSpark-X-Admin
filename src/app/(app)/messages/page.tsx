@@ -30,10 +30,10 @@ function MessagesScreen() {
   }, [dispatch, filter]);
 
   async function toggleRead(message: ContactMessage) {
-    setBusyId(message.id);
+    setBusyId(message.Id);
     setActionError(null);
     try {
-      await dispatch(setMessageRead({ id: message.id, isRead: !message.isRead })).unwrap();
+      await dispatch(setMessageRead({ id: message.Id, isRead: !message.IsRead })).unwrap();
     } catch (err) {
       setActionError(messageOf(err));
     } finally {
@@ -42,7 +42,7 @@ function MessagesScreen() {
   }
 
   const visible = items.filter((message) =>
-    filter === "" ? true : filter === "read" ? message.isRead : !message.isRead,
+    filter === "" ? true : filter === "read" ? message.IsRead : !message.IsRead,
   );
 
   return (
@@ -73,32 +73,32 @@ function MessagesScreen() {
       ) : (
         <ul className="flex flex-col gap-4">
           {visible.map((message) => (
-            <li key={message.id}>
-              <Panel className={`p-5 ${message.isRead ? "" : "border-electric-indigo/40"}`}>
+            <li key={message.Id}>
+              <Panel className={`p-5 ${message.IsRead ? "" : "border-electric-indigo/40"}`}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="flex flex-wrap items-center gap-2 font-medium">
-                      {message.subject || "(no subject)"}
-                      {!message.isRead && <Badge tone="violet">Unread</Badge>}
+                      {message.Subject || "(no subject)"}
+                      {!message.IsRead && <Badge tone="violet">Unread</Badge>}
                     </p>
                     <p className="mt-0.5 text-sm text-soft-white/70">
-                      {message.name} ·{" "}
-                      <a href={`mailto:${message.email}`} className="text-indigo-text hover:underline">
-                        {message.email}
+                      {message.Name} ·{" "}
+                      <a href={`mailto:${message.Email}`} className="text-indigo-text hover:underline">
+                        {message.Email}
                       </a>{" "}
-                      · {formatDate(message.createdAt)}
+                      · {formatDate(message.CreatedAt)}
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="secondary" loading={busyId === message.id} onClick={() => toggleRead(message)}>
-                      {message.isRead ? "Mark unread" : "Mark read"}
+                    <Button size="sm" variant="secondary" loading={busyId === message.Id} onClick={() => toggleRead(message)}>
+                      {message.IsRead ? "Mark unread" : "Mark read"}
                     </Button>
                     <Button size="sm" variant="danger" onClick={() => setToDelete(message)}>
                       Delete
                     </Button>
                   </div>
                 </div>
-                <p className="mt-4 text-sm leading-6 whitespace-pre-wrap text-soft-white/90">{message.message}</p>
+                <p className="mt-4 text-sm leading-6 whitespace-pre-wrap text-soft-white/90">{message.Message}</p>
               </Panel>
             </li>
           ))}
@@ -110,10 +110,10 @@ function MessagesScreen() {
         title="Delete this message?"
         confirmLabel="Delete message"
         onClose={() => setToDelete(null)}
-        onConfirm={() => dispatch(deleteMessage(toDelete!.id)).unwrap()}
+        onConfirm={() => dispatch(deleteMessage(toDelete!.Id)).unwrap()}
       >
         <p>
-          The message from <strong>{toDelete?.name}</strong> will be deleted permanently.
+          The message from <strong>{toDelete?.Name}</strong> will be deleted permanently.
         </p>
       </ConfirmDialog>
     </>

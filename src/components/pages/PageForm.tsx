@@ -41,7 +41,7 @@ export default function PageForm({ page }: { page?: SitePage }) {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { slug: page?.slug ?? "", title: page?.title ?? "", body: page?.body ?? "" },
+    defaultValues: { slug: page?.Slug ?? "", title: page?.Title ?? "", body: page?.Body ?? "" },
   });
 
   const slug = useWatch({ control, name: "slug" });
@@ -51,12 +51,12 @@ export default function PageForm({ page }: { page?: SitePage }) {
     setSaved(false);
     try {
       if (page) {
-        const updated = await dispatch(updatePage({ id: page.id, body: values })).unwrap();
-        reset({ slug: updated.slug, title: updated.title, body: updated.body });
+        const updated = await dispatch(updatePage({ id: page.Id, body: values })).unwrap();
+        reset({ slug: updated.Slug, title: updated.Title, body: updated.Body });
         setSaved(true);
       } else {
         const created = await dispatch(createPage(values)).unwrap();
-        router.push(`/site-pages/${created.id}`);
+        router.push(`/site-pages/${created.Id}`);
       }
     } catch (error) {
       setSubmitError(messageOf(error));

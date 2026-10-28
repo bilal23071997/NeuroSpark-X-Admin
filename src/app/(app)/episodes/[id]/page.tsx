@@ -43,7 +43,7 @@ export default function EditEpisodePage() {
     setBusy(true);
     setActionError(null);
     try {
-      await dispatch((episode.status === "published" ? unpublishEpisode : publishEpisode)(episode.id)).unwrap();
+      await dispatch((episode.Status === "published" ? unpublishEpisode : publishEpisode)(episode.Id)).unwrap();
     } catch (err) {
       setActionError(messageOf(err));
     } finally {
@@ -68,13 +68,13 @@ export default function EditEpisodePage() {
   if (!episode) return <LoadingBlock label="Loading episode…" />;
 
   // Based on what is saved, not what is typed: the API needs the link on file to publish.
-  const canPublish = episode.status === "published" || Boolean(episode.youtubeUrl);
+  const canPublish = episode.Status === "published" || Boolean(episode.YoutubeUrl);
 
   return (
     <>
       <PageHeader
         title="Edit episode"
-        description={episode.title}
+        description={episode.Title}
         actions={
           <Link href="/episodes" className="text-sm text-soft-white/70 hover:text-soft-white">
             ← All episodes
@@ -87,10 +87,10 @@ export default function EditEpisodePage() {
       <Panel className="mb-6 p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3">
-            <PublishBadge status={episode.status} />
+            <PublishBadge status={episode.Status} />
             <span className="text-sm text-soft-white/70">
-              {episode.status === "published"
-                ? `Live since ${formatDate(episode.publishedAt)}`
+              {episode.Status === "published"
+                ? `Live since ${formatDate(episode.PublishedAt)}`
                 : "Not visible on the site yet"}
             </span>
           </div>
@@ -102,7 +102,7 @@ export default function EditEpisodePage() {
               aria-describedby={!canPublish ? "publish-help" : undefined}
               onClick={togglePublish}
             >
-              {episode.status === "published" ? "Unpublish" : "Publish"}
+              {episode.Status === "published" ? "Unpublish" : "Publish"}
             </Button>
             <Button variant="danger" onClick={() => setConfirmDelete(true)}>
               Delete
@@ -116,7 +116,7 @@ export default function EditEpisodePage() {
         )}
       </Panel>
 
-      <EpisodeForm key={episode.id} episode={episode} />
+      <EpisodeForm key={episode.Id} episode={episode} />
 
       <ConfirmDialog
         open={confirmDelete}
@@ -124,12 +124,12 @@ export default function EditEpisodePage() {
         confirmLabel="Delete episode"
         onClose={() => setConfirmDelete(false)}
         onConfirm={async () => {
-          await dispatch(deleteEpisode(episode.id)).unwrap();
+          await dispatch(deleteEpisode(episode.Id)).unwrap();
           router.replace("/episodes");
         }}
       >
         <p>
-          <strong>{episode.title}</strong> will be deleted permanently. This can&apos;t be undone.
+          <strong>{episode.Title}</strong> will be deleted permanently. This can&apos;t be undone.
         </p>
       </ConfirmDialog>
     </>

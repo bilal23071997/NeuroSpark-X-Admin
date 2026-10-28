@@ -27,10 +27,10 @@ function PagesScreen() {
   }, [dispatch]);
 
   async function togglePublish(page: SitePage) {
-    setBusyId(page.id);
+    setBusyId(page.Id);
     setActionError(null);
     try {
-      await dispatch((page.status === "published" ? unpublishPage : publishPage)(page.id)).unwrap();
+      await dispatch((page.Status === "published" ? unpublishPage : publishPage)(page.Id)).unwrap();
     } catch (err) {
       setActionError(messageOf(err));
     } finally {
@@ -69,29 +69,29 @@ function PagesScreen() {
               </thead>
               <tbody className="divide-y divide-soft-white/10">
                 {items.map((page) => (
-                  <tr key={page.id} className="align-middle">
+                  <tr key={page.Id} className="align-middle">
                     <td className="px-5 py-4">
-                      <Link href={`/site-pages/${page.id}`} className="font-medium hover:text-indigo-text">
-                        {page.title}
+                      <Link href={`/site-pages/${page.Id}`} className="font-medium hover:text-indigo-text">
+                        {page.Title}
                       </Link>
-                      <p className="mt-0.5 text-xs text-soft-white/60">/{page.slug}</p>
+                      <p className="mt-0.5 text-xs text-soft-white/60">/{page.Slug}</p>
                     </td>
                     <td className="px-5 py-4">
-                      <PublishBadge status={page.status} />
+                      <PublishBadge status={page.Status} />
                     </td>
-                    <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">{formatDate(page.updatedAt)}</td>
+                    <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">{formatDate(page.UpdatedAt)}</td>
                     <td className="px-5 py-4">
                       <div className="flex flex-wrap justify-end gap-2">
-                        <ButtonLink href={`/site-pages/${page.id}`} variant="secondary" size="sm">
+                        <ButtonLink href={`/site-pages/${page.Id}`} variant="secondary" size="sm">
                           Edit
                         </ButtonLink>
                         <Button
                           size="sm"
                           variant="secondary"
-                          loading={busyId === page.id}
+                          loading={busyId === page.Id}
                           onClick={() => togglePublish(page)}
                         >
-                          {page.status === "published" ? "Unpublish" : "Publish"}
+                          {page.Status === "published" ? "Unpublish" : "Publish"}
                         </Button>
                         <Button size="sm" variant="danger" onClick={() => setToDelete(page)}>
                           Delete
@@ -111,10 +111,10 @@ function PagesScreen() {
         title="Delete this page?"
         confirmLabel="Delete page"
         onClose={() => setToDelete(null)}
-        onConfirm={() => dispatch(deletePage(toDelete!.id)).unwrap()}
+        onConfirm={() => dispatch(deletePage(toDelete!.Id)).unwrap()}
       >
         <p>
-          <strong>{toDelete?.title}</strong> (/{toDelete?.slug}) will be deleted permanently. Links to it will stop working.
+          <strong>{toDelete?.Title}</strong> (/{toDelete?.Slug}) will be deleted permanently. Links to it will stop working.
         </p>
       </ConfirmDialog>
     </>

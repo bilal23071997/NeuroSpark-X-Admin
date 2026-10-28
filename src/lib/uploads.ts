@@ -110,12 +110,12 @@ export async function uploadFile(kind: UploadKind, file: File): Promise<UploadRe
 
   // The browser sets Content-Length itself (it is a forbidden header name), so only send the rest.
   const headers = Object.fromEntries(
-    Object.entries(presigned.headers).filter(([name]) => name.toLowerCase() !== "content-length"),
+    Object.entries(presigned.Headers).filter(([name]) => name.toLowerCase() !== "content-length"),
   );
 
   let response: Response;
   try {
-    response = await fetch(presigned.uploadUrl, { method: presigned.method, headers, body: file });
+    response = await fetch(presigned.UploadUrl, { method: presigned.Method, headers, body: file });
   } catch {
     throw new Error(
       "The upload was blocked before it reached storage. The bucket may need a CORS rule that allows this site to PUT files.",
@@ -123,5 +123,5 @@ export async function uploadFile(kind: UploadKind, file: File): Promise<UploadRe
   }
   if (!response.ok) throw new Error(`Storage refused the upload (error ${response.status}).`);
 
-  return { key: presigned.key, publicUrl: presigned.publicUrl };
+  return { key: presigned.Key, publicUrl: presigned.PublicUrl };
 }

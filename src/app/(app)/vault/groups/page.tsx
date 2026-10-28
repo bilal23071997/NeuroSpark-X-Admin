@@ -54,10 +54,10 @@ function GroupForm({ editing, parents, onDone }: { editing: Editing; parents: Va
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: group?.name ?? "",
-      slug: group?.slug ?? "",
-      description: group?.description ?? "",
-      parentId: String(group?.parentId ?? (editing.mode === "create" ? (editing.parent?.id ?? "") : "")),
+      name: group?.Name ?? "",
+      slug: group?.Slug ?? "",
+      description: group?.Description ?? "",
+      parentId: String(group?.ParentId ?? (editing.mode === "create" ? (editing.parent?.Id ?? "") : "")),
     },
   });
 
@@ -70,22 +70,22 @@ function GroupForm({ editing, parents, onDone }: { editing: Editing; parents: Va
             name: values.name,
             slug: emptyToUndefined(values.slug),
             description: values.description.trim(),
-            parentId: editing.parent?.id,
+            parentId: editing.parent?.Id,
           }),
         ).unwrap();
       } else if (editing.mode === "official") {
         // An official category only accepts a new description.
-        await dispatch(updateGroup({ id: editing.group.id, body: { description: values.description.trim() } })).unwrap();
+        await dispatch(updateGroup({ id: editing.group.Id, body: { description: values.description.trim() } })).unwrap();
       } else {
         await dispatch(
           updateGroup({
-            id: editing.group.id,
+            id: editing.group.Id,
             body: {
               name: values.name,
               slug: emptyToUndefined(values.slug),
               description: values.description.trim(),
               // A top-level group stays where it is.
-              parentId: editing.group.parentId === null ? undefined : Number(values.parentId),
+              parentId: editing.group.ParentId === null ? undefined : Number(values.parentId),
             },
           }),
         ).unwrap();
@@ -103,7 +103,7 @@ function GroupForm({ editing, parents, onDone }: { editing: Editing; parents: Va
       {submitError && <Alert>{submitError}</Alert>}
       {official ? (
         <p className="text-sm text-soft-white/80">
-          <strong>{group?.name}</strong> is one of the five official categories. Its name, address and place can&apos;t
+          <strong>{group?.Name}</strong> is one of the five official categories. Its name, address and place can&apos;t
           change, but you can edit its description.
         </p>
       ) : (
@@ -118,11 +118,11 @@ function GroupForm({ editing, parents, onDone }: { editing: Editing; parents: Va
         </>
       )}
       <TextAreaField label="Description" hint="Optional." error={errors.description?.message} {...register("description")} />
-      {editing.mode === "edit" && editing.group.parentId !== null && (
+      {editing.mode === "edit" && editing.group.ParentId !== null && (
         <SelectField label="Sits under" hint="Moving a sub-group moves its products with it." {...register("parentId")}>
           {parents.map((parent) => (
-            <option key={parent.id} value={parent.id}>
-              {parent.name}
+            <option key={parent.Id} value={parent.Id}>
+              {parent.Name}
             </option>
           ))}
         </SelectField>
@@ -151,14 +151,14 @@ function GroupsScreen() {
   }, [dispatch]);
 
   async function move(parent: VaultGroup, from: number, to: number) {
-    if (to < 0 || to >= parent.children.length) return;
-    const ids = parent.children.map((child) => child.id);
+    if (to < 0 || to >= parent.Children.length) return;
+    const ids = parent.Children.map((child) => child.Id);
     const [moved] = ids.splice(from, 1);
     ids.splice(to, 0, moved);
     setReorderError(null);
-    dispatch(previewSubGroupOrder({ parentId: parent.id, ids }));
+    dispatch(previewSubGroupOrder({ parentId: parent.Id, ids }));
     try {
-      await dispatch(reorderSubGroups({ parentId: parent.id, ids })).unwrap();
+      await dispatch(reorderSubGroups({ parentId: parent.Id, ids })).unwrap();
     } catch (err) {
       setReorderError(messageOf(err));
       dispatch(fetchGroups()); // put the list back to what the API has
@@ -184,35 +184,35 @@ function GroupsScreen() {
       ) : (
         <div className="flex flex-col gap-6">
           {items.map((category) => (
-            <Panel key={category.id} className="overflow-hidden">
+            <Panel key={category.Id} className="overflow-hidden">
               <div className="flex flex-wrap items-start justify-between gap-4 border-b border-soft-white/10 p-5">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-3">
-                    <h2 className="text-lg font-semibold">{category.name}</h2>
-                    {category.isOfficial && (
+                    <h2 className="text-lg font-semibold">{category.Name}</h2>
+                    {category.IsOfficial && (
                       <Badge tone="violet">
                         <span aria-hidden className="mr-1">🔒</span>Official
                       </Badge>
                     )}
                     <span className="text-xs text-soft-white/60">
-                      {category.productCount} {category.productCount === 1 ? "product" : "products"}
+                      {category.ProductCount} {category.ProductCount === 1 ? "product" : "products"}
                     </span>
                   </div>
-                  {!category.isOfficial && <p className="mt-0.5 text-xs text-soft-white/60">/{category.slug}</p>}
-                  <p className="mt-1.5 max-w-2xl text-sm text-soft-white/70">{category.description}</p>
+                  {!category.IsOfficial && <p className="mt-0.5 text-xs text-soft-white/60">/{category.Slug}</p>}
+                  <p className="mt-1.5 max-w-2xl text-sm text-soft-white/70">{category.Description}</p>
                 </div>
                 <div className="flex gap-2">
                   <Button
                     size="sm"
                     variant="secondary"
-                    onClick={() => setEditing({ mode: category.isOfficial ? "official" : "edit", group: category })}
+                    onClick={() => setEditing({ mode: category.IsOfficial ? "official" : "edit", group: category })}
                   >
-                    {category.isOfficial ? "Edit description" : "Edit"}
+                    {category.IsOfficial ? "Edit description" : "Edit"}
                   </Button>
                   <Button size="sm" onClick={() => setEditing({ mode: "create", parent: category })}>
                     Add sub-group
                   </Button>
-                  {!category.isOfficial && (
+                  {!category.IsOfficial && (
                     <Button size="sm" variant="danger" onClick={() => setToDelete(category)}>
                       Delete
                     </Button>
@@ -220,22 +220,22 @@ function GroupsScreen() {
                 </div>
               </div>
 
-              {category.children.length === 0 ? (
+              {category.Children.length === 0 ? (
                 <p className="px-5 py-6 text-sm text-soft-white/60">No sub-groups yet.</p>
               ) : (
                 <SortableList
                   className="divide-y divide-soft-white/10"
-                  items={category.children}
-                  getId={(child) => child.id}
-                  getLabel={(child) => `sub-group ${child.name}`}
+                  items={category.Children}
+                  getId={(child) => child.Id}
+                  getLabel={(child) => `sub-group ${child.Name}`}
                   onMove={(from, to) => move(category, from, to)}
                   renderItem={(child, controls) => (
                     <div className="flex flex-wrap items-center gap-3 bg-panel px-3 py-3 sm:px-5">
                       {controls.handle}
                       <div className="min-w-0 flex-1 basis-40">
-                        <p className="font-medium">{child.name}</p>
+                        <p className="font-medium">{child.Name}</p>
                         <p className="text-xs text-soft-white/60">
-                          /{child.slug} · {child.productCount} {child.productCount === 1 ? "product" : "products"}
+                          /{child.Slug} · {child.ProductCount} {child.ProductCount === 1 ? "product" : "products"}
                         </p>
                       </div>
                       {controls.buttons}
@@ -262,18 +262,18 @@ function GroupsScreen() {
         title={
           editing?.mode === "create"
             ? editing.parent
-              ? `New sub-group in ${editing.parent.name}`
+              ? `New sub-group in ${editing.parent.Name}`
               : "New group"
             : editing?.mode === "official"
               ? "Edit category description"
-              : editing?.group.parentId === null
+              : editing?.group.ParentId === null
                 ? "Edit group"
                 : "Edit sub-group"
         }
       >
         {editing && (
           <GroupForm
-            key={editing.mode + ("group" in editing ? editing.group.id : (editing.parent?.id ?? "top"))}
+            key={editing.mode + ("group" in editing ? editing.group.Id : (editing.parent?.Id ?? "top"))}
             editing={editing}
             parents={items}
             onDone={() => setEditing(null)}
@@ -283,13 +283,13 @@ function GroupsScreen() {
 
       <ConfirmDialog
         open={toDelete !== null}
-        title={toDelete?.parentId === null ? "Delete this group?" : "Delete this sub-group?"}
-        confirmLabel={toDelete?.parentId === null ? "Delete group" : "Delete sub-group"}
+        title={toDelete?.ParentId === null ? "Delete this group?" : "Delete this sub-group?"}
+        confirmLabel={toDelete?.ParentId === null ? "Delete group" : "Delete sub-group"}
         onClose={() => setToDelete(null)}
-        onConfirm={() => dispatch(deleteGroup(toDelete!.id)).unwrap()}
+        onConfirm={() => dispatch(deleteGroup(toDelete!.Id)).unwrap()}
       >
         <p>
-          <strong>{toDelete?.name}</strong> will be deleted. A group that still has products{toDelete?.parentId === null ? " or sub-groups" : ""} can&apos;t be deleted:
+          <strong>{toDelete?.Name}</strong> will be deleted. A group that still has products{toDelete?.ParentId === null ? " or sub-groups" : ""} can&apos;t be deleted:
           move or delete those first.
         </p>
       </ConfirmDialog>

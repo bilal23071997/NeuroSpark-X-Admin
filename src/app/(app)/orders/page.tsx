@@ -59,33 +59,33 @@ function OrdersScreen() {
       ) : (
         <ul className="flex flex-col gap-4">
           {items.map((order) => (
-            <li key={order.id}>
+            <li key={order.Id}>
               <Panel className="p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="flex flex-wrap items-center gap-2 font-medium">
-                      {order.number}
-                      <Badge tone={tones[order.status]}>{order.status}</Badge>
-                      {order.mode === "test" && <Badge tone="violet">Test</Badge>}
+                      {order.Number}
+                      <Badge tone={tones[order.Status]}>{order.Status}</Badge>
+                      {order.Mode === "test" && <Badge tone="violet">Test</Badge>}
                     </p>
                     <p className="mt-0.5 text-sm text-soft-white/70">
-                      {order.email ? (
-                        <a href={`mailto:${order.email}`} className="text-indigo-text hover:underline">
-                          {order.email}
+                      {order.Email ? (
+                        <a href={`mailto:${order.Email}`} className="text-indigo-text hover:underline">
+                          {order.Email}
                         </a>
                       ) : (
                         "No email yet"
                       )}{" "}
-                      · {formatDate(order.paidAt ?? order.createdAt)}
+                      · {formatDate(order.PaidAt ?? order.CreatedAt)}
                     </p>
                   </div>
-                  <p className="font-heading text-lg font-semibold">{formatPrice(order.totalCents)}</p>
+                  <p className="font-heading text-lg font-semibold">{formatPrice(order.TotalCents)}</p>
                 </div>
                 <ul className="mt-4 divide-y divide-soft-white/10 text-sm">
-                  {order.items.map((item) => (
-                    <li key={item.id} className="flex justify-between gap-4 py-2">
-                      <span>{item.name}</span>
-                      <span className="text-soft-white/70">{formatPrice(item.unitPriceCents)}</span>
+                  {order.Items.map((item) => (
+                    <li key={item.Id} className="flex justify-between gap-4 py-2">
+                      <span>{item.Name}</span>
+                      <span className="text-soft-white/70">{formatPrice(item.UnitPriceCents)}</span>
                     </li>
                   ))}
                 </ul>

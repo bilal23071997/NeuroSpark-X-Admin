@@ -115,7 +115,7 @@ const engagementSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    function loads<T extends { id: string } | { key: string }>(
+    function loads<T extends { Id: string } | { Key: string }>(
       part: Part,
       thunk: typeof fetchFreeResources | typeof fetchSubscribers | typeof fetchMessages | typeof fetchSettings,
       failure: string,
@@ -145,25 +145,25 @@ const engagementSlice = createSlice({
     builder
       .addCase(createFreeResource.fulfilled, (state, action) => {
         upsert(state.freeResources.items, action.payload);
-        state.freeResources.items.sort((a, b) => a.sortOrder - b.sortOrder);
+        state.freeResources.items.sort((a, b) => a.SortOrder - b.SortOrder);
       })
       .addCase(updateFreeResource.fulfilled, (state, action) => {
         upsert(state.freeResources.items, action.payload);
-        state.freeResources.items.sort((a, b) => a.sortOrder - b.sortOrder);
+        state.freeResources.items.sort((a, b) => a.SortOrder - b.SortOrder);
       })
       .addCase(deleteFreeResource.fulfilled, (state, action) => {
-        state.freeResources.items = state.freeResources.items.filter((item) => item.id !== action.payload);
+        state.freeResources.items = state.freeResources.items.filter((item) => item.Id !== action.payload);
       })
       .addCase(setSubscribed.fulfilled, (state, action) => upsert(state.subscribers.items, action.payload))
       .addCase(deleteSubscriber.fulfilled, (state, action) => {
-        state.subscribers.items = state.subscribers.items.filter((item) => item.id !== action.payload);
+        state.subscribers.items = state.subscribers.items.filter((item) => item.Id !== action.payload);
       })
       .addCase(setMessageRead.fulfilled, (state, action) => upsert(state.messages.items, action.payload))
       .addCase(deleteMessage.fulfilled, (state, action) => {
-        state.messages.items = state.messages.items.filter((item) => item.id !== action.payload);
+        state.messages.items = state.messages.items.filter((item) => item.Id !== action.payload);
       })
       .addCase(saveSetting.fulfilled, (state, action) => {
-        const index = state.settings.items.findIndex((item) => item.key === action.payload.key);
+        const index = state.settings.items.findIndex((item) => item.Key === action.payload.Key);
         if (index !== -1) state.settings.items[index] = action.payload;
       });
   },

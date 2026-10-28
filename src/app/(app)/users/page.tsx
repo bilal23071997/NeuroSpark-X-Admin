@@ -94,8 +94,8 @@ function CreateUserForm({ onDone }: { onDone: () => void }) {
         {...register("role")}
       >
         {roles.items.map((role) => (
-          <option key={role.id} value={role.name}>
-            {role.name === "admin" ? "Admin" : "Editor"}
+          <option key={role.Id} value={role.Name}>
+            {role.Name === "admin" ? "Admin" : "Editor"}
           </option>
         ))}
       </SelectField>
@@ -122,7 +122,7 @@ function EditUserForm({ user, isSelf, onDone }: { user: StaffUser; isSelf: boole
     formState: { errors, isSubmitting },
   } = useForm<EditValues>({
     resolver: zodResolver(editSchema),
-    defaultValues: { name: user.name, role: user.role.name, password: "" },
+    defaultValues: { name: user.Name, role: user.Role.Name, password: "" },
   });
 
   async function onSubmit(values: EditValues) {
@@ -130,7 +130,7 @@ function EditUserForm({ user, isSelf, onDone }: { user: StaffUser; isSelf: boole
     try {
       await dispatch(
         updateUser({
-          id: user.id,
+          id: user.Id,
           body: {
             name: values.name,
             // You can't change your own role here: demoting yourself could lock the portal out of admins.
@@ -148,7 +148,7 @@ function EditUserForm({ user, isSelf, onDone }: { user: StaffUser; isSelf: boole
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
       {submitError && <Alert>{submitError}</Alert>}
-      <p className="text-sm text-soft-white/70">{user.email}</p>
+      <p className="text-sm text-soft-white/70">{user.Email}</p>
       <TextField label="Name" required error={errors.name?.message} {...register("name")} />
       <SelectField
         label="Role"
@@ -159,8 +159,8 @@ function EditUserForm({ user, isSelf, onDone }: { user: StaffUser; isSelf: boole
         {...register("role")}
       >
         {roles.items.map((role) => (
-          <option key={role.id} value={role.name}>
-            {role.name === "admin" ? "Admin" : "Editor"}
+          <option key={role.Id} value={role.Name}>
+            {role.Name === "admin" ? "Admin" : "Editor"}
           </option>
         ))}
       </SelectField>
@@ -188,7 +188,7 @@ export default function UsersPage() {
   const dispatch = useAppDispatch();
   const me = useAppSelector((state) => state.auth.user);
   const { items, status, error, roles } = useAppSelector((state) => state.users);
-  const isAdmin = me?.role === "admin";
+  const isAdmin = me?.Role === "admin";
 
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<StaffUser | null>(null);
@@ -240,28 +240,28 @@ export default function UsersPage() {
               </thead>
               <tbody className="divide-y divide-soft-white/10">
                 {items.map((user) => {
-                  const isSelf = user.id === me?.id;
+                  const isSelf = user.Id === me?.Id;
                   return (
-                    <tr key={user.id} className="align-middle">
+                    <tr key={user.Id} className="align-middle">
                       <td className="px-5 py-4">
-                        <span className="font-medium">{user.name}</span>
+                        <span className="font-medium">{user.Name}</span>
                         {isSelf && (
                           <span className="ml-2 align-middle">
                             <Badge>You</Badge>
                           </span>
                         )}
-                        <p className="mt-0.5 text-xs text-soft-white/60">{user.email}</p>
+                        <p className="mt-0.5 text-xs text-soft-white/60">{user.Email}</p>
                       </td>
                       <td className="px-5 py-4">
-                        <Badge tone={user.role.name === "admin" ? "violet" : "neutral"}>
-                          {user.role.name === "admin" ? "Admin" : "Editor"}
+                        <Badge tone={user.Role.Name === "admin" ? "violet" : "neutral"}>
+                          {user.Role.Name === "admin" ? "Admin" : "Editor"}
                         </Badge>
                       </td>
                       <td className="px-5 py-4">
-                        <ActiveBadge isActive={user.isActive} />
+                        <ActiveBadge isActive={user.IsActive} />
                       </td>
                       <td className="hidden px-5 py-4 text-soft-white/80 lg:table-cell">
-                        {formatDate(user.createdAt)}
+                        {formatDate(user.CreatedAt)}
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex flex-wrap justify-end gap-2">
@@ -270,12 +270,12 @@ export default function UsersPage() {
                           </Button>
                           <Button
                             size="sm"
-                            variant={user.isActive ? "danger" : "secondary"}
+                            variant={user.IsActive ? "danger" : "secondary"}
                             disabled={isSelf}
                             title={isSelf ? "You can't deactivate your own account" : undefined}
                             onClick={() => setToggling(user)}
                           >
-                            {user.isActive ? "Deactivate" : "Activate"}
+                            {user.IsActive ? "Deactivate" : "Activate"}
                           </Button>
                         </div>
                       </td>
@@ -294,22 +294,22 @@ export default function UsersPage() {
 
       <Modal open={editing !== null} onClose={() => setEditing(null)} title="Edit staff account">
         {editing && (
-          <EditUserForm key={editing.id} user={editing} isSelf={editing.id === me?.id} onDone={() => setEditing(null)} />
+          <EditUserForm key={editing.Id} user={editing} isSelf={editing.Id === me?.Id} onDone={() => setEditing(null)} />
         )}
       </Modal>
 
       <ConfirmDialog
         open={toggling !== null}
-        title={toggling?.isActive ? "Deactivate this account?" : "Activate this account?"}
-        confirmLabel={toggling?.isActive ? "Deactivate" : "Activate"}
-        danger={toggling?.isActive ?? false}
+        title={toggling?.IsActive ? "Deactivate this account?" : "Activate this account?"}
+        confirmLabel={toggling?.IsActive ? "Deactivate" : "Activate"}
+        danger={toggling?.IsActive ?? false}
         onClose={() => setToggling(null)}
-        onConfirm={() => dispatch(updateUser({ id: toggling!.id, body: { isActive: !toggling!.isActive } })).unwrap()}
+        onConfirm={() => dispatch(updateUser({ id: toggling!.Id, body: { isActive: !toggling!.IsActive } })).unwrap()}
       >
         <p>
-          {toggling?.isActive
-            ? `${toggling?.name} will be signed out and won't be able to sign in until you activate the account again.`
-            : `${toggling?.name} will be able to sign in again.`}
+          {toggling?.IsActive
+            ? `${toggling?.Name} will be signed out and won't be able to sign in until you activate the account again.`
+            : `${toggling?.Name} will be able to sign in again.`}
         </p>
       </ConfirmDialog>
     </>

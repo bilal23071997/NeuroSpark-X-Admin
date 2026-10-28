@@ -41,7 +41,7 @@ function KeysForm({
   const [error, setError] = useState<string | null>(null);
 
   const nothingToSave = !secretKey.trim() && !webhookSecret.trim() && !publishableKey.trim();
-  const hasKeys = Boolean(status.secretKey || status.webhookSecretSet || status.publishableKey);
+  const hasKeys = Boolean(status.SecretKey || status.WebhookSecretSet || status.PublishableKey);
 
   async function save() {
     setError(null);
@@ -82,7 +82,7 @@ function KeysForm({
     <Panel className="p-6">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-heading text-lg font-semibold capitalize">{mode} keys</h2>
-        {status.secretKey && status.webhookSecretSet && status.publishableKey ? (
+        {status.SecretKey && status.WebhookSecretSet && status.PublishableKey ? (
           <Badge tone="teal">Saved</Badge>
         ) : (
           <Badge tone="amber">Incomplete</Badge>
@@ -103,10 +103,10 @@ function KeysForm({
           autoComplete="off"
           spellCheck={false}
           disabled={locked}
-          placeholder={status.secretKey ?? `${mode === "test" ? "sk_test_" : "sk_live_"}…`}
+          placeholder={status.SecretKey ?? `${mode === "test" ? "sk_test_" : "sk_live_"}…`}
           hint={
-            status.secretKey
-              ? `Saved as ${status.secretKey}. Type a new key only if you want to replace it.`
+            status.SecretKey
+              ? `Saved as ${status.SecretKey}. Type a new key only if you want to replace it.`
               : "Stripe dashboard > Developers > API keys."
           }
           value={secretKey}
@@ -120,9 +120,9 @@ function KeysForm({
           autoComplete="off"
           spellCheck={false}
           disabled={locked}
-          placeholder={status.publishableKey ?? `pk_${mode}_…`}
+          placeholder={status.PublishableKey ?? `pk_${mode}_…`}
           hint={
-            status.publishableKey
+            status.PublishableKey
               ? "Saved. Type a new one only if you want to replace it."
               : "Stripe dashboard > Developers > API keys. This one is public; it shows the payment form on your website."
           }
@@ -138,9 +138,9 @@ function KeysForm({
           autoComplete="off"
           spellCheck={false}
           disabled={locked}
-          placeholder={status.webhookSecretSet ? "whsec_••••••••" : "whsec_…"}
+          placeholder={status.WebhookSecretSet ? "whsec_••••••••" : "whsec_…"}
           hint={
-            status.webhookSecretSet
+            status.WebhookSecretSet
               ? "Saved. Type a new one only if you want to replace it."
               : "Stripe shows it after you add the webhook (see the steps above)."
           }
@@ -194,7 +194,7 @@ function PaymentsScreen() {
   const dispatch = useAppDispatch();
   const { item, status, error } = useAppSelector((state) => state.payments.settings);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const [testResult, setTestResult] = useState<{ Ok: boolean; Message: string } | null>(null);
   const [testing, setTesting] = useState(false);
   const [switchTo, setSwitchTo] = useState<PaymentMode | null>(null);
   const [clearMode, setClearMode] = useState<PaymentMode | null>(null);
@@ -209,7 +209,7 @@ function PaymentsScreen() {
     try {
       setTestResult(await dispatch(testPaymentConnection()).unwrap());
     } catch (err) {
-      setTestResult({ ok: false, message: messageOf(err) });
+      setTestResult({ Ok: false, Message: messageOf(err) });
     } finally {
       setTesting(false);
     }
@@ -243,16 +243,16 @@ function PaymentsScreen() {
           <Panel className="p-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h2 className="font-heading text-lg font-semibold">Checkout is {settings.enabled ? "on" : "off"}</h2>
+                <h2 className="font-heading text-lg font-semibold">Checkout is {settings.Enabled ? "on" : "off"}</h2>
                 <p className="mt-1 text-sm text-soft-white/70">
-                  {settings.enabled
-                    ? `Buyers can pay now, in ${settings.mode} mode.`
+                  {settings.Enabled
+                    ? `Buyers can pay now, in ${settings.Mode} mode.`
                     : "Save the secret key and webhook secret for the current mode to switch it on."}
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <Badge tone={settings.mode === "live" ? "red" : "amber"}>
-                  {settings.mode === "live" ? "Live: real money" : "Test mode"}
+                <Badge tone={settings.Mode === "live" ? "red" : "amber"}>
+                  {settings.Mode === "live" ? "Live: real money" : "Test mode"}
                 </Badge>
                 <Button type="button" variant="secondary" loading={testing} onClick={runTest}>
                   Test connection
@@ -260,18 +260,18 @@ function PaymentsScreen() {
               </div>
             </div>
             {testResult && (
-              <Alert tone={testResult.ok ? "success" : "error"} className="mt-4">
-                {testResult.message}
+              <Alert tone={testResult.Ok ? "success" : "error"} className="mt-4">
+                {testResult.Message}
               </Alert>
             )}
-            {!settings.fromEnvironment && (
+            {!settings.FromEnvironment && (
               <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-soft-white/10 pt-5">
                 <span className="text-sm text-soft-white/70">Mode:</span>
                 <Button
                   type="button"
                   size="sm"
-                  variant={settings.mode === "test" ? "primary" : "secondary"}
-                  disabled={settings.mode === "test"}
+                  variant={settings.Mode === "test" ? "primary" : "secondary"}
+                  disabled={settings.Mode === "test"}
                   onClick={() => changeMode("test")}
                 >
                   Test
@@ -279,8 +279,8 @@ function PaymentsScreen() {
                 <Button
                   type="button"
                   size="sm"
-                  variant={settings.mode === "live" ? "primary" : "secondary"}
-                  disabled={settings.mode === "live"}
+                  variant={settings.Mode === "live" ? "primary" : "secondary"}
+                  disabled={settings.Mode === "live"}
                   onClick={() => setSwitchTo("live")}
                 >
                   Live
@@ -292,12 +292,12 @@ function PaymentsScreen() {
             )}
           </Panel>
 
-          {settings.fromEnvironment && (
+          {settings.FromEnvironment && (
             <Alert tone="info">
               Stripe is set up through the server&apos;s environment variables, so the keys cannot be changed here.
             </Alert>
           )}
-          {!settings.canStoreKeys && !settings.fromEnvironment && (
+          {!settings.CanStoreKeys && !settings.FromEnvironment && (
             <Alert tone="warning">
               The server has no PAYMENTS_ENCRYPTION_KEY, so keys cannot be saved here yet. Ask the developer to set it.
             </Alert>
@@ -316,7 +316,7 @@ function PaymentsScreen() {
               <li>
                 Endpoint URL: paste this address.
                 <div className="mt-2">
-                  <CopyField value={settings.webhookUrl} />
+                  <CopyField value={settings.WebhookUrl} />
                 </div>
               </li>
               <li>
@@ -326,7 +326,7 @@ function PaymentsScreen() {
                 Copy the <strong>Signing secret</strong> (starts with <code>whsec_</code>) into the form below.
               </li>
             </ol>
-            {/localhost|127\.0\.0\.1/.test(settings.webhookUrl) && (
+            {/localhost|127\.0\.0\.1/.test(settings.WebhookUrl) && (
               <Alert tone="warning" className="mt-4">
                 This address is only reachable from this computer, so Stripe cannot call it. It works once the API is
                 deployed (or with the Stripe CLI while developing).
@@ -336,14 +336,14 @@ function PaymentsScreen() {
 
           <KeysForm
             mode="test"
-            status={settings.test}
-            locked={settings.fromEnvironment || !settings.canStoreKeys}
+            status={settings.Test}
+            locked={settings.FromEnvironment || !settings.CanStoreKeys}
             onClear={() => setClearMode("test")}
           />
           <KeysForm
             mode="live"
-            status={settings.live}
-            locked={settings.fromEnvironment || !settings.canStoreKeys}
+            status={settings.Live}
+            locked={settings.FromEnvironment || !settings.CanStoreKeys}
             onClear={() => setClearMode("live")}
           />
         </div>
@@ -371,7 +371,7 @@ function PaymentsScreen() {
       >
         <p>
           The saved {clearMode} keys are deleted from the server.
-          {clearMode === "live" && settings?.mode === "live" ? " Checkout goes back to test mode." : ""} Existing orders
+          {clearMode === "live" && settings?.Mode === "live" ? " Checkout goes back to test mode." : ""} Existing orders
           are not affected.
         </p>
       </ConfirmDialog>

@@ -38,15 +38,15 @@ type FormValues = z.infer<typeof schema>;
 
 function toFormValues(episode: Episode | undefined, defaultNumber: number): FormValues {
   return {
-    title: episode?.title ?? "",
-    slug: episode?.slug ?? "",
-    series: episode?.series ?? "",
-    episodeNumber: String(episode?.episodeNumber ?? defaultNumber),
-    duration: episode?.duration ?? "",
-    youtubeUrl: episode?.youtubeUrl ?? "",
-    description: episode?.description ?? "",
-    showNotes: (episode?.showNotes ?? []).map((text) => ({ text })),
-    isFeatured: episode?.isFeatured ?? false,
+    title: episode?.Title ?? "",
+    slug: episode?.Slug ?? "",
+    series: episode?.Series ?? "",
+    episodeNumber: String(episode?.EpisodeNumber ?? defaultNumber),
+    duration: episode?.Duration ?? "",
+    youtubeUrl: episode?.YoutubeUrl ?? "",
+    description: episode?.Description ?? "",
+    showNotes: (episode?.ShowNotes ?? []).map((text) => ({ text })),
+    isFeatured: episode?.IsFeatured ?? false,
   };
 }
 
@@ -78,7 +78,7 @@ export default function EpisodeForm({
   const notes = useFieldArray({ control, name: "showNotes" });
 
   // An episode saved with a series the hardcoded list doesn't know about stays selectable.
-  const unknownSeries = episode && !podcastSeries.some((series) => series.slug === episode.series);
+  const unknownSeries = episode && !podcastSeries.some((series) => series.slug === episode.Series);
 
   async function onSubmit(values: FormValues) {
     setSubmitError(null);
@@ -88,7 +88,7 @@ export default function EpisodeForm({
       if (episode) {
         const updated = await dispatch(
           updateEpisode({
-            id: episode.id,
+            id: episode.Id,
             body: {
               title: values.title,
               slug: emptyToUndefined(values.slug),
@@ -120,7 +120,7 @@ export default function EpisodeForm({
           }),
         ).unwrap();
         // Land on the edit screen, where the episode can be published.
-        router.push(`/episodes/${created.id}`);
+        router.push(`/episodes/${created.Id}`);
       }
     } catch (error) {
       setSubmitError(messageOf(error));
@@ -159,7 +159,7 @@ export default function EpisodeForm({
               </option>
             ))}
             {unknownSeries && (
-              <option value={episode.series}>{episode.series} (not in the website&apos;s list)</option>
+              <option value={episode.Series}>{episode.Series} (not in the website&apos;s list)</option>
             )}
           </SelectField>
           <TextField

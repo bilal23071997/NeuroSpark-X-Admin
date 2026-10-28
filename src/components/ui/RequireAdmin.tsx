@@ -10,7 +10,7 @@ import PageHeader from "./PageHeader";
  * explanation instead of a page full of 403 errors, and no request is made.
  */
 export default function RequireAdmin({ children }: { children: ReactNode }) {
-  const role = useAppSelector((state) => state.auth.user?.role);
+  const role = useAppSelector((state) => state.auth.user?.Role);
   if (role !== "admin") {
     return (
       <>

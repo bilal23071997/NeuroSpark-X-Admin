@@ -18,12 +18,12 @@ interface AuthState {
 const initialState: AuthState = { user: null, session: "checking", status: "idle", error: null, notice: null };
 
 /** On page load: trade the stored refresh token for a fresh session. */
-export const restoreSession = apiThunk("auth/restoreSession", async () => (await refreshSession()).user);
+export const restoreSession = apiThunk("auth/restoreSession", async () => (await refreshSession()).User);
 
 export const login = apiThunk("auth/login", async (credentials: { email: string; password: string }) => {
   const { data } = await api.post<Tokens>("/auth/login", credentials);
   setTokens(data);
-  return data.user;
+  return data.User;
 });
 
 export const logout = apiThunk("auth/logout", async () => {

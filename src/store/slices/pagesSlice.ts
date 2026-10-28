@@ -59,7 +59,7 @@ const pagesSlice = createSlice({
   extraReducers: (builder) => {
     const saved = (state: PagesState, page: SitePage) => {
       upsert(state.items, page);
-      if (state.detail.item?.id === page.id) state.detail.item = page;
+      if (state.detail.item?.Id === page.Id) state.detail.item = page;
     };
 
     builder
@@ -89,8 +89,8 @@ const pagesSlice = createSlice({
       .addCase(publishPage.fulfilled, (state, action) => saved(state, action.payload))
       .addCase(unpublishPage.fulfilled, (state, action) => saved(state, action.payload))
       .addCase(deletePage.fulfilled, (state, action) => {
-        state.items = state.items.filter((page) => page.id !== action.payload);
-        if (state.detail.item?.id === action.payload) state.detail = emptyDetail<SitePage>();
+        state.items = state.items.filter((page) => page.Id !== action.payload);
+        if (state.detail.item?.Id === action.payload) state.detail = emptyDetail<SitePage>();
       });
   },
 });

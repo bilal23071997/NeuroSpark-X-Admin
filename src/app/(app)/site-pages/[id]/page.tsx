@@ -38,7 +38,7 @@ function EditPageScreen() {
     setBusy(true);
     setActionError(null);
     try {
-      await dispatch((page.status === "published" ? unpublishPage : publishPage)(page.id)).unwrap();
+      await dispatch((page.Status === "published" ? unpublishPage : publishPage)(page.Id)).unwrap();
     } catch (err) {
       setActionError(messageOf(err));
     } finally {
@@ -66,7 +66,7 @@ function EditPageScreen() {
     <>
       <PageHeader
         title="Edit page"
-        description={`/${page.slug}`}
+        description={`/${page.Slug}`}
         actions={
           <Link href="/site-pages" className="text-sm text-soft-white/70 hover:text-soft-white">
             ← All pages
@@ -79,14 +79,14 @@ function EditPageScreen() {
       <Panel className="mb-6 p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3">
-            <PublishBadge status={page.status} />
+            <PublishBadge status={page.Status} />
             <span className="text-sm text-soft-white/70">
-              {page.status === "published" ? `Live since ${formatDate(page.publishedAt)}` : "Not visible on the site yet"}
+              {page.Status === "published" ? `Live since ${formatDate(page.PublishedAt)}` : "Not visible on the site yet"}
             </span>
           </div>
           <div className="flex gap-3">
             <Button variant="secondary" loading={busy} onClick={togglePublish}>
-              {page.status === "published" ? "Unpublish" : "Publish"}
+              {page.Status === "published" ? "Unpublish" : "Publish"}
             </Button>
             <Button variant="danger" onClick={() => setConfirmDelete(true)}>
               Delete
@@ -96,7 +96,7 @@ function EditPageScreen() {
         <p className="mt-3 text-xs text-soft-white/60">Publish and Unpublish use the last saved version. Save your changes first.</p>
       </Panel>
 
-      <PageForm key={page.id} page={page} />
+      <PageForm key={page.Id} page={page} />
 
       <ConfirmDialog
         open={confirmDelete}
@@ -104,12 +104,12 @@ function EditPageScreen() {
         confirmLabel="Delete page"
         onClose={() => setConfirmDelete(false)}
         onConfirm={async () => {
-          await dispatch(deletePage(page.id)).unwrap();
+          await dispatch(deletePage(page.Id)).unwrap();
           router.replace("/site-pages");
         }}
       >
         <p>
-          <strong>{page.title}</strong> (/{page.slug}) will be deleted permanently. Links to it will stop working.
+          <strong>{page.Title}</strong> (/{page.Slug}) will be deleted permanently. Links to it will stop working.
         </p>
       </ConfirmDialog>
     </>

@@ -87,7 +87,7 @@ function isActive(pathname: string, href: string) {
 
 function NavLinks({ onNavigate }: { onNavigate: () => void }) {
   const pathname = usePathname();
-  const role = useAppSelector((state) => state.auth.user?.role);
+  const role = useAppSelector((state) => state.auth.user?.Role);
 
   return (
     <nav aria-label="Main" className="flex flex-col gap-4">

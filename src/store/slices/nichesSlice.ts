@@ -29,7 +29,7 @@ export const deleteNiche = apiThunk("niches/delete", async (id: string) => {
 });
 
 const sortNiches = (items: Niche[]) =>
-  items.sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name));
+  items.sort((a, b) => a.SortOrder - b.SortOrder || a.Name.localeCompare(b.Name));
 
 const nichesSlice = createSlice({
   name: "niches",
@@ -58,7 +58,7 @@ const nichesSlice = createSlice({
         sortNiches(state.items);
       })
       .addCase(deleteNiche.fulfilled, (state, action) => {
-        state.items = state.items.filter((niche) => niche.id !== action.payload);
+        state.items = state.items.filter((niche) => niche.Id !== action.payload);
       });
   },
 });

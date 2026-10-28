@@ -37,7 +37,7 @@ export default function DashboardPage() {
   const products = useAppSelector((state) => state.products);
   const messages = useAppSelector((state) => state.engagement.messages);
   const subscribers = useAppSelector((state) => state.engagement.subscribers);
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.Role === "admin";
 
   useEffect(() => {
     dispatch(fetchArticles());
@@ -54,15 +54,15 @@ export default function DashboardPage() {
   const loading = articles.status !== "succeeded" || episodes.status !== "succeeded";
   const failed = articles.error ?? episodes.error;
 
-  const draftArticles = articles.items.filter((article) => article.status === "draft");
-  const draftEpisodes = episodes.items.filter((episode) => episode.status === "draft");
-  const published = (items: { status: string }[]) => items.filter((item) => item.status === "published").length;
+  const draftArticles = articles.items.filter((article) => article.Status === "draft");
+  const draftEpisodes = episodes.items.filter((episode) => episode.Status === "draft");
+  const published = (items: { Status: string }[]) => items.filter((item) => item.Status === "published").length;
 
   return (
     <>
       <PageHeader
         title="Dashboard"
-        description={`Welcome back${user ? `, ${user.name}` : ""}. Here is where the site's content stands.`}
+        description={`Welcome back${user ? `, ${user.Name}` : ""}. Here is where the site's content stands.`}
         actions={
           <>
             <ButtonLink href="/articles/new">New article</ButtonLink>
@@ -94,14 +94,14 @@ export default function DashboardPage() {
             {isAdmin && products.status === "succeeded" && (
               <>
                 <Stat label="Published products" value={published(products.items)} href="/vault/products" />
-                <Stat label="Draft products" value={products.items.filter((p) => p.status === "draft").length} href="/vault/products" />
+                <Stat label="Draft products" value={products.items.filter((p) => p.Status === "draft").length} href="/vault/products" />
               </>
             )}
             {isAdmin && messages.status === "succeeded" && (
-              <Stat label="Unread messages" value={messages.items.filter((m) => !m.isRead).length} href="/messages" />
+              <Stat label="Unread messages" value={messages.items.filter((m) => !m.IsRead).length} href="/messages" />
             )}
             {isAdmin && subscribers.status === "succeeded" && (
-              <Stat label="Newsletter subscribers" value={subscribers.items.filter((s) => s.isSubscribed).length} href="/newsletter" />
+              <Stat label="Newsletter subscribers" value={subscribers.items.filter((s) => s.IsSubscribed).length} href="/newsletter" />
             )}
           </div>
 
@@ -113,13 +113,13 @@ export default function DashboardPage() {
               ) : (
                 <ul className="divide-y divide-soft-white/10">
                   {draftArticles.slice(0, 5).map((article) => (
-                    <li key={article.id}>
+                    <li key={article.Id}>
                       <Link
-                        href={`/articles/${article.id}`}
+                        href={`/articles/${article.Id}`}
                         className="block px-5 py-3 hover:bg-soft-white/5"
                       >
-                        <span className="block text-sm font-medium">{article.title}</span>
-                        <span className="text-xs text-soft-white/60">{article.niche.name}</span>
+                        <span className="block text-sm font-medium">{article.Title}</span>
+                        <span className="text-xs text-soft-white/60">{article.Niche.Name}</span>
                       </Link>
                     </li>
                   ))}
@@ -134,17 +134,17 @@ export default function DashboardPage() {
               ) : (
                 <ul className="divide-y divide-soft-white/10">
                   {draftEpisodes.slice(0, 5).map((episode) => (
-                    <li key={episode.id}>
+                    <li key={episode.Id}>
                       <Link
-                        href={`/episodes/${episode.id}`}
+                        href={`/episodes/${episode.Id}`}
                         className="block px-5 py-3 hover:bg-soft-white/5"
                       >
                         <span className="block text-sm font-medium">
-                          #{episode.episodeNumber} · {episode.title}
+                          #{episode.EpisodeNumber} · {episode.Title}
                         </span>
                         <span className="text-xs text-soft-white/60">
-                          {getSeriesName(episode.series)}
-                          {!episode.youtubeUrl && " · needs a YouTube link"}
+                          {getSeriesName(episode.Series)}
+                          {!episode.YoutubeUrl && " · needs a YouTube link"}
                         </span>
                       </Link>
                     </li>

@@ -47,7 +47,7 @@ function EditProductScreen() {
     setBusy(true);
     setActionError(null);
     try {
-      await dispatch((product.status === "published" ? unpublishProduct : publishProduct)(product.id)).unwrap();
+      await dispatch((product.Status === "published" ? unpublishProduct : publishProduct)(product.Id)).unwrap();
     } catch (err) {
       setActionError(messageOf(err));
     } finally {
@@ -75,7 +75,7 @@ function EditProductScreen() {
     <>
       <PageHeader
         title="Edit product"
-        description={product.name}
+        description={product.Name}
         actions={
           <Link href="/vault/products" className="text-sm text-soft-white/70 hover:text-soft-white">
             ← All products
@@ -88,16 +88,16 @@ function EditProductScreen() {
       <Panel className="mb-6 p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3">
-            <PublishBadge status={product.status} />
+            <PublishBadge status={product.Status} />
             <span className="text-sm text-soft-white/70">
-              {product.status === "published"
-                ? `Live since ${formatDate(product.publishedAt)}`
+              {product.Status === "published"
+                ? `Live since ${formatDate(product.PublishedAt)}`
                 : "Not visible on the site yet"}
             </span>
           </div>
           <div className="flex gap-3">
             <Button variant="secondary" loading={busy} onClick={togglePublish}>
-              {product.status === "published" ? "Unpublish" : "Publish"}
+              {product.Status === "published" ? "Unpublish" : "Publish"}
             </Button>
             <Button variant="danger" onClick={() => setConfirmDelete(true)}>
               Delete
@@ -109,7 +109,7 @@ function EditProductScreen() {
         </p>
       </Panel>
 
-      <ProductForm key={product.id} product={product} groups={groups.items} />
+      <ProductForm key={product.Id} product={product} groups={groups.items} />
 
       <ConfirmDialog
         open={confirmDelete}
@@ -117,12 +117,12 @@ function EditProductScreen() {
         confirmLabel="Delete product"
         onClose={() => setConfirmDelete(false)}
         onConfirm={async () => {
-          await dispatch(deleteProduct(product.id)).unwrap();
+          await dispatch(deleteProduct(product.Id)).unwrap();
           router.replace("/vault/products");
         }}
       >
         <p>
-          <strong>{product.name}</strong> will be deleted permanently. This can&apos;t be undone. A file attached to
+          <strong>{product.Name}</strong> will be deleted permanently. This can&apos;t be undone. A file attached to
           it stays in storage.
         </p>
       </ConfirmDialog>

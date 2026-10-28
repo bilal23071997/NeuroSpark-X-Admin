@@ -46,10 +46,10 @@ export default function ArticlesPage() {
   }, [dispatch, statusFilter, nicheFilter]);
 
   async function togglePublish(article: Article) {
-    setBusyId(article.id);
+    setBusyId(article.Id);
     setActionError(null);
     try {
-      await dispatch((article.status === "published" ? unpublishArticle : publishArticle)(article.id)).unwrap();
+      await dispatch((article.Status === "published" ? unpublishArticle : publishArticle)(article.Id)).unwrap();
     } catch (err) {
       setActionError(messageOf(err));
     } finally {
@@ -80,8 +80,8 @@ export default function ArticlesPage() {
         <FilterSelect label="Niche" value={nicheFilter} onChange={(event) => setNicheFilter(event.target.value)}>
           <option value="">All niches</option>
           {niches.map((niche) => (
-            <option key={niche.id} value={niche.id}>
-              {niche.name}
+            <option key={niche.Id} value={niche.Id}>
+              {niche.Name}
             </option>
           ))}
         </FilterSelect>
@@ -114,37 +114,37 @@ export default function ArticlesPage() {
               </thead>
               <tbody className="divide-y divide-soft-white/10">
                 {items.map((article) => (
-                  <tr key={article.id} className="align-middle">
+                  <tr key={article.Id} className="align-middle">
                     <td className="px-5 py-4">
-                      <Link href={`/articles/${article.id}`} className="font-medium hover:text-indigo-text">
-                        {article.title}
+                      <Link href={`/articles/${article.Id}`} className="font-medium hover:text-indigo-text">
+                        {article.Title}
                       </Link>
-                      {article.isFeatured && (
+                      {article.IsFeatured && (
                         <span className="ml-2 align-middle">
                           <Badge tone="violet">Featured</Badge>
                         </span>
                       )}
-                      <p className="mt-0.5 text-xs text-soft-white/60">/{article.slug}</p>
+                      <p className="mt-0.5 text-xs text-soft-white/60">/{article.Slug}</p>
                     </td>
-                    <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">{article.niche.name}</td>
+                    <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">{article.Niche.Name}</td>
                     <td className="px-5 py-4">
-                      <PublishBadge status={article.status} />
+                      <PublishBadge status={article.Status} />
                     </td>
                     <td className="hidden px-5 py-4 text-soft-white/80 lg:table-cell">
-                      {formatDate(article.publishedAt)}
+                      {formatDate(article.PublishedAt)}
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex flex-wrap justify-end gap-2">
-                        <ButtonLink href={`/articles/${article.id}`} variant="secondary" size="sm">
+                        <ButtonLink href={`/articles/${article.Id}`} variant="secondary" size="sm">
                           Edit
                         </ButtonLink>
                         <Button
                           size="sm"
                           variant="secondary"
-                          loading={busyId === article.id}
+                          loading={busyId === article.Id}
                           onClick={() => togglePublish(article)}
                         >
-                          {article.status === "published" ? "Unpublish" : "Publish"}
+                          {article.Status === "published" ? "Unpublish" : "Publish"}
                         </Button>
                         <Button size="sm" variant="danger" onClick={() => setToDelete(article)}>
                           Delete
@@ -164,10 +164,10 @@ export default function ArticlesPage() {
         title="Delete this article?"
         confirmLabel="Delete article"
         onClose={() => setToDelete(null)}
-        onConfirm={() => dispatch(deleteArticle(toDelete!.id)).unwrap()}
+        onConfirm={() => dispatch(deleteArticle(toDelete!.Id)).unwrap()}
       >
         <p>
-          <strong>{toDelete?.title}</strong> will be deleted permanently. This can&apos;t be undone.
+          <strong>{toDelete?.Title}</strong> will be deleted permanently. This can&apos;t be undone.
         </p>
       </ConfirmDialog>
     </>

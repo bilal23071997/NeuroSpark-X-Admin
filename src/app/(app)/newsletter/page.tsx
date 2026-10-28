@@ -32,10 +32,10 @@ function SubscribersScreen() {
   }, [dispatch, filter]);
 
   async function toggle(subscriber: NewsletterSubscriber) {
-    setBusyId(subscriber.id);
+    setBusyId(subscriber.Id);
     setActionError(null);
     try {
-      await dispatch(setSubscribed({ id: subscriber.id, isSubscribed: !subscriber.isSubscribed })).unwrap();
+      await dispatch(setSubscribed({ id: subscriber.Id, isSubscribed: !subscriber.IsSubscribed })).unwrap();
     } catch (err) {
       setActionError(messageOf(err));
     } finally {
@@ -65,7 +65,7 @@ function SubscribersScreen() {
   }
 
   const visible = items.filter((subscriber) =>
-    filter === "" ? true : filter === "subscribed" ? subscriber.isSubscribed : !subscriber.isSubscribed,
+    filter === "" ? true : filter === "subscribed" ? subscriber.IsSubscribed : !subscriber.IsSubscribed,
   );
 
   return (
@@ -112,17 +112,17 @@ function SubscribersScreen() {
               </thead>
               <tbody className="divide-y divide-soft-white/10">
                 {visible.map((subscriber) => (
-                  <tr key={subscriber.id} className="align-middle">
-                    <td className="px-5 py-4 font-medium break-all">{subscriber.email}</td>
-                    <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">{subscriber.source ?? "—"}</td>
-                    <td className="hidden px-5 py-4 text-soft-white/80 sm:table-cell">{formatDate(subscriber.subscribedAt)}</td>
+                  <tr key={subscriber.Id} className="align-middle">
+                    <td className="px-5 py-4 font-medium break-all">{subscriber.Email}</td>
+                    <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">{subscriber.Source ?? "—"}</td>
+                    <td className="hidden px-5 py-4 text-soft-white/80 sm:table-cell">{formatDate(subscriber.SubscribedAt)}</td>
                     <td className="px-5 py-4">
-                      {subscriber.isSubscribed ? <Badge tone="teal">Subscribed</Badge> : <Badge tone="neutral">Unsubscribed</Badge>}
+                      {subscriber.IsSubscribed ? <Badge tone="teal">Subscribed</Badge> : <Badge tone="neutral">Unsubscribed</Badge>}
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex flex-wrap justify-end gap-2">
-                        <Button size="sm" variant="secondary" loading={busyId === subscriber.id} onClick={() => toggle(subscriber)}>
-                          {subscriber.isSubscribed ? "Unsubscribe" : "Resubscribe"}
+                        <Button size="sm" variant="secondary" loading={busyId === subscriber.Id} onClick={() => toggle(subscriber)}>
+                          {subscriber.IsSubscribed ? "Unsubscribe" : "Resubscribe"}
                         </Button>
                         <Button size="sm" variant="danger" onClick={() => setToDelete(subscriber)}>
                           Delete
@@ -142,10 +142,10 @@ function SubscribersScreen() {
         title="Delete this subscriber?"
         confirmLabel="Delete subscriber"
         onClose={() => setToDelete(null)}
-        onConfirm={() => dispatch(deleteSubscriber(toDelete!.id)).unwrap()}
+        onConfirm={() => dispatch(deleteSubscriber(toDelete!.Id)).unwrap()}
       >
         <p>
-          <strong>{toDelete?.email}</strong> will be removed completely. Use this for data-deletion requests; to just
+          <strong>{toDelete?.Email}</strong> will be removed completely. Use this for data-deletion requests; to just
           stop emailing someone, unsubscribe them instead.
         </p>
       </ConfirmDialog>

@@ -101,7 +101,7 @@ const productsSlice = createSlice({
   extraReducers: (builder) => {
     const saved = (state: ProductsState, product: Product) => {
       upsert(state.items, product);
-      if (state.detail.item?.id === product.id) state.detail.item = product;
+      if (state.detail.item?.Id === product.Id) state.detail.item = product;
     };
 
     builder
@@ -134,8 +134,8 @@ const productsSlice = createSlice({
       .addCase(publishProduct.fulfilled, (state, action) => saved(state, action.payload))
       .addCase(unpublishProduct.fulfilled, (state, action) => saved(state, action.payload))
       .addCase(deleteProduct.fulfilled, (state, action) => {
-        state.items = state.items.filter((product) => product.id !== action.payload);
-        if (state.detail.item?.id === action.payload) state.detail = emptyDetail<Product>();
+        state.items = state.items.filter((product) => product.Id !== action.payload);
+        if (state.detail.item?.Id === action.payload) state.detail = emptyDetail<Product>();
       });
   },
 });

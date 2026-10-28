@@ -128,37 +128,37 @@ function newSection(type: SectionType): SectionValues {
 
 function toFormValues(product: Product | undefined, defaultCategoryId: string): FormValues {
   return {
-    name: product?.name ?? "",
-    slug: product?.slug ?? "",
-    categoryId: product ? String(product.categoryId) : defaultCategoryId,
-    summary: product?.summary ?? "",
-    description: product?.description ?? "",
-    price: product ? centsToDollars(product.priceCents) : "",
-    salePrice: centsToDollars(product?.salePriceCents),
-    format: product?.format ?? "",
-    delivery: product?.delivery ?? "",
-    destination: product?.destination ?? "",
-    symbol: product?.symbol ?? "",
-    forWho: product?.forWho ?? "",
-    included: (product?.included?.length ? product.included : [""]).map((text) => ({ text })),
-    coverImageUrl: product?.coverImageUrl ?? "",
-    gallery: (product?.galleryImages ?? []).map((url) => ({ url })),
-    sections: (product?.sections ?? []).map((section) => ({
-      sid: section.id,
-      type: section.type,
-      title: section.title ?? "",
-      body: section.body ?? "",
-      items: (section.items ?? []).map((text) => ({ text })),
-      faq: section.faq ?? [],
-      imageUrl: section.imageUrl ?? "",
-      alt: section.alt ?? "",
+    name: product?.Name ?? "",
+    slug: product?.Slug ?? "",
+    categoryId: product ? String(product.CategoryId) : defaultCategoryId,
+    summary: product?.Summary ?? "",
+    description: product?.Description ?? "",
+    price: product ? centsToDollars(product.PriceCents) : "",
+    salePrice: centsToDollars(product?.SalePriceCents),
+    format: product?.Format ?? "",
+    delivery: product?.Delivery ?? "",
+    destination: product?.Destination ?? "",
+    symbol: product?.Symbol ?? "",
+    forWho: product?.ForWho ?? "",
+    included: (product?.Included?.length ? product.Included : [""]).map((text) => ({ text })),
+    coverImageUrl: product?.CoverImageUrl ?? "",
+    gallery: (product?.GalleryImages ?? []).map((url) => ({ url })),
+    sections: (product?.Sections ?? []).map((section) => ({
+      sid: section.Id,
+      type: section.Type,
+      title: section.Title ?? "",
+      body: section.Body ?? "",
+      items: (section.Items ?? []).map((text) => ({ text })),
+      faq: (section.Faq ?? []).map((entry) => ({ question: entry.Question, answer: entry.Answer })),
+      imageUrl: section.ImageUrl ?? "",
+      alt: section.Alt ?? "",
     })),
     file:
-      product?.fileKey && product.fileName && product.fileSizeBytes
-        ? { fileKey: product.fileKey, fileName: product.fileName, fileSizeBytes: product.fileSizeBytes }
+      product?.FileKey && product.FileName && product.FileSizeBytes
+        ? { fileKey: product.FileKey, fileName: product.FileName, fileSizeBytes: product.FileSizeBytes }
         : null,
-    isFeatured: product?.isFeatured ?? false,
-    isPopular: product?.isPopular ?? false,
+    isFeatured: product?.IsFeatured ?? false,
+    isPopular: product?.IsPopular ?? false,
   };
 }
 
@@ -449,11 +449,11 @@ function GroupOptions({ groups }: { groups: VaultGroup[] }) {
   return (
     <>
       {groups.map((category) => (
-        <optgroup key={category.id} label={category.name}>
-          <option value={category.id}>{category.name} (main group)</option>
-          {category.children.map((child) => (
-            <option key={child.id} value={child.id}>
-              {category.name} › {child.name}
+        <optgroup key={category.Id} label={category.Name}>
+          <option value={category.Id}>{category.Name} (main group)</option>
+          {category.Children.map((child) => (
+            <option key={child.Id} value={child.Id}>
+              {category.Name} › {child.Name}
             </option>
           ))}
         </optgroup>
@@ -491,14 +491,14 @@ export default function ProductForm({ product, groups }: { product?: Product; gr
     try {
       if (product) {
         const updated = await dispatch(
-          updateProduct({ id: product.id, body: toProductInput(values, true) }),
+          updateProduct({ id: product.Id, body: toProductInput(values, true) }),
         ).unwrap();
         reset(toFormValues(updated, ""));
         setSaved(true);
       } else {
         const created = await dispatch(createProduct(toProductInput(values, false))).unwrap();
         // Land on the edit screen, where the product can be published.
-        router.push(`/vault/products/${created.id}`);
+        router.push(`/vault/products/${created.Id}`);
       }
     } catch (error) {
       setSubmitError(messageOf(error));

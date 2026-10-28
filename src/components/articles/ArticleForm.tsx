@@ -33,15 +33,15 @@ type FormValues = z.infer<typeof schema>;
 
 function toFormValues(article?: Article): FormValues {
   return {
-    title: article?.title ?? "",
-    slug: article?.slug ?? "",
-    excerpt: article?.excerpt ?? "",
+    title: article?.Title ?? "",
+    slug: article?.Slug ?? "",
+    excerpt: article?.Excerpt ?? "",
     // Older articles were saved as paragraphs: a blank line between them is the same thing in Markdown.
-    body: article?.body.join("\n\n") ?? "",
-    nicheId: article?.nicheId ?? "",
-    isFeatured: article?.isFeatured ?? false,
-    seoTitle: article?.seoTitle ?? "",
-    seoDescription: article?.seoDescription ?? "",
+    body: article?.Body.join("\n\n") ?? "",
+    nicheId: article?.NicheId ?? "",
+    isFeatured: article?.IsFeatured ?? false,
+    seoTitle: article?.SeoTitle ?? "",
+    seoDescription: article?.SeoDescription ?? "",
   };
 }
 
@@ -73,7 +73,7 @@ export default function ArticleForm({ article }: { article?: Article }) {
       if (article) {
         const updated = await dispatch(
           updateArticle({
-            id: article.id,
+            id: article.Id,
             body: {
               title: values.title,
               slug: emptyToUndefined(values.slug),
@@ -103,7 +103,7 @@ export default function ArticleForm({ article }: { article?: Article }) {
           }),
         ).unwrap();
         // Land on the edit screen, where the article can be published.
-        router.push(`/articles/${created.id}`);
+        router.push(`/articles/${created.Id}`);
       }
     } catch (error) {
       setSubmitError(messageOf(error));
@@ -138,8 +138,8 @@ export default function ArticleForm({ article }: { article?: Article }) {
         <SelectField label="Niche" required error={errors.nicheId?.message} {...register("nicheId")}>
           <option value="">Choose a niche…</option>
           {niches.items.map((niche) => (
-            <option key={niche.id} value={niche.id}>
-              {niche.name}
+            <option key={niche.Id} value={niche.Id}>
+              {niche.Name}
             </option>
           ))}
         </SelectField>

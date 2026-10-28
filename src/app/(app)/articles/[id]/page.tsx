@@ -43,7 +43,7 @@ export default function EditArticlePage() {
     setBusy(true);
     setActionError(null);
     try {
-      await dispatch((article.status === "published" ? unpublishArticle : publishArticle)(article.id)).unwrap();
+      await dispatch((article.Status === "published" ? unpublishArticle : publishArticle)(article.Id)).unwrap();
     } catch (err) {
       setActionError(messageOf(err));
     } finally {
@@ -71,7 +71,7 @@ export default function EditArticlePage() {
     <>
       <PageHeader
         title="Edit article"
-        description={article.title}
+        description={article.Title}
         actions={
           <Link href="/articles" className="text-sm text-soft-white/70 hover:text-soft-white">
             ← All articles
@@ -83,16 +83,16 @@ export default function EditArticlePage() {
 
       <Panel className="mb-6 flex flex-wrap items-center justify-between gap-4 p-5">
         <div className="flex flex-wrap items-center gap-3">
-          <PublishBadge status={article.status} />
+          <PublishBadge status={article.Status} />
           <span className="text-sm text-soft-white/70">
-            {article.status === "published"
-              ? `Live since ${formatDate(article.publishedAt)}`
+            {article.Status === "published"
+              ? `Live since ${formatDate(article.PublishedAt)}`
               : "Not visible on the site yet"}
           </span>
         </div>
         <div className="flex gap-3">
           <Button variant="secondary" loading={busy} onClick={togglePublish}>
-            {article.status === "published" ? "Unpublish" : "Publish"}
+            {article.Status === "published" ? "Unpublish" : "Publish"}
           </Button>
           <Button variant="danger" onClick={() => setConfirmDelete(true)}>
             Delete
@@ -100,7 +100,7 @@ export default function EditArticlePage() {
         </div>
       </Panel>
 
-      <ArticleForm key={article.id} article={article} />
+      <ArticleForm key={article.Id} article={article} />
 
       <ConfirmDialog
         open={confirmDelete}
@@ -108,12 +108,12 @@ export default function EditArticlePage() {
         confirmLabel="Delete article"
         onClose={() => setConfirmDelete(false)}
         onConfirm={async () => {
-          await dispatch(deleteArticle(article.id)).unwrap();
+          await dispatch(deleteArticle(article.Id)).unwrap();
           router.replace("/articles");
         }}
       >
         <p>
-          <strong>{article.title}</strong> will be deleted permanently. This can&apos;t be undone.
+          <strong>{article.Title}</strong> will be deleted permanently. This can&apos;t be undone.
         </p>
       </ConfirmDialog>
     </>

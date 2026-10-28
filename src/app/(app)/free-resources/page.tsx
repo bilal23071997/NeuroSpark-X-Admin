@@ -45,13 +45,13 @@ function ResourceForm({ resource, onDone }: { resource: FreeResource | null; onD
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      title: resource?.title ?? "",
-      description: resource?.description ?? "",
-      type: resource?.type ?? "",
-      destination: resource?.destination ?? "",
-      url: resource?.url ?? "",
-      isPublished: resource?.isPublished ?? false,
-      sortOrder: String(resource?.sortOrder ?? 0),
+      title: resource?.Title ?? "",
+      description: resource?.Description ?? "",
+      type: resource?.Type ?? "",
+      destination: resource?.Destination ?? "",
+      url: resource?.Url ?? "",
+      isPublished: resource?.IsPublished ?? false,
+      sortOrder: String(resource?.SortOrder ?? 0),
     },
   });
 
@@ -67,7 +67,7 @@ function ResourceForm({ resource, onDone }: { resource: FreeResource | null; onD
       sortOrder: Number(values.sortOrder),
     };
     try {
-      if (resource) await dispatch(updateFreeResource({ id: resource.id, body })).unwrap();
+      if (resource) await dispatch(updateFreeResource({ id: resource.Id, body })).unwrap();
       else await dispatch(createFreeResource(body)).unwrap();
       onDone();
     } catch (error) {
@@ -164,18 +164,18 @@ export default function FreeResourcesPage() {
               </thead>
               <tbody className="divide-y divide-soft-white/10">
                 {items.map((resource) => (
-                  <tr key={resource.id} className="align-middle">
+                  <tr key={resource.Id} className="align-middle">
                     <td className="px-5 py-4">
-                      <span className="font-medium">{resource.title}</span>
+                      <span className="font-medium">{resource.Title}</span>
                       <p className="mt-0.5 text-xs text-soft-white/60">
-                        {resource.type} · order {resource.sortOrder}
+                        {resource.Type} · order {resource.SortOrder}
                       </p>
                     </td>
                     <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">
-                      {getDestinationName(resource.destination)}
+                      {getDestinationName(resource.Destination)}
                     </td>
                     <td className="px-5 py-4">
-                      <PublishBadge status={resource.isPublished ? "published" : "draft"} />
+                      <PublishBadge status={resource.IsPublished ? "published" : "draft"} />
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex justify-end gap-2">
@@ -201,7 +201,7 @@ export default function FreeResourcesPage() {
         title={editing ? "Edit free resource" : "New free resource"}
         wide
       >
-        <ResourceForm key={editing?.id ?? "new"} resource={editing ?? null} onDone={() => setEditing(undefined)} />
+        <ResourceForm key={editing?.Id ?? "new"} resource={editing ?? null} onDone={() => setEditing(undefined)} />
       </Modal>
 
       <ConfirmDialog
@@ -209,10 +209,10 @@ export default function FreeResourcesPage() {
         title="Delete this resource?"
         confirmLabel="Delete resource"
         onClose={() => setToDelete(null)}
-        onConfirm={() => dispatch(deleteFreeResource(toDelete!.id)).unwrap()}
+        onConfirm={() => dispatch(deleteFreeResource(toDelete!.Id)).unwrap()}
       >
         <p>
-          <strong>{toDelete?.title}</strong> will be deleted permanently.
+          <strong>{toDelete?.Title}</strong> will be deleted permanently.
         </p>
       </ConfirmDialog>
     </>

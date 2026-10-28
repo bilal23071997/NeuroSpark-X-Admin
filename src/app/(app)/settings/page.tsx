@@ -18,22 +18,22 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function problemWith(setting: SiteSetting, value: string) {
   const text = value.trim();
   if (!text) return null; // empty clears the setting
-  if (setting.kind === "email") return EMAIL.test(text) ? null : `${setting.label} must be an email address.`;
+  if (setting.Kind === "email") return EMAIL.test(text) ? null : `${setting.Label} must be an email address.`;
   try {
-    return new URL(text).protocol === "https:" ? null : `${setting.label} must be a full https link.`;
+    return new URL(text).protocol === "https:" ? null : `${setting.Label} must be a full https link.`;
   } catch {
-    return `${setting.label} must be a full https link.`;
+    return `${setting.Label} must be a full https link.`;
   }
 }
 
 function SettingRow({ setting }: { setting: SiteSetting }) {
   const dispatch = useAppDispatch();
-  const [value, setValue] = useState(setting.value ?? "");
+  const [value, setValue] = useState(setting.Value ?? "");
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  const unchanged = value.trim() === (setting.value ?? "");
+  const unchanged = value.trim() === (setting.Value ?? "");
 
   async function save() {
     setSaved(false);
@@ -42,8 +42,8 @@ function SettingRow({ setting }: { setting: SiteSetting }) {
     if (problem) return;
     setBusy(true);
     try {
-      const updated = await dispatch(saveSetting({ key: setting.key, value })).unwrap();
-      setValue(updated.value ?? "");
+      const updated = await dispatch(saveSetting({ key: setting.Key, value })).unwrap();
+      setValue(updated.Value ?? "");
       setSaved(true);
     } catch (err) {
       setError(messageOf(err));
@@ -63,10 +63,10 @@ function SettingRow({ setting }: { setting: SiteSetting }) {
     >
       <div className="flex-1">
         <TextField
-          label={setting.label}
-          type={setting.kind === "email" ? "email" : "url"}
-          placeholder={setting.kind === "email" ? "name@example.com" : "https://…"}
-          hint={`${setting.description} Leave empty to clear it.`}
+          label={setting.Label}
+          type={setting.Kind === "email" ? "email" : "url"}
+          placeholder={setting.Kind === "email" ? "name@example.com" : "https://…"}
+          hint={`${setting.Description} Leave empty to clear it.`}
           value={value}
           error={error ?? undefined}
           onChange={(event) => {
@@ -108,7 +108,7 @@ function SettingsScreen() {
       ) : (
         <Panel className="flex flex-col gap-7 p-6">
           {items.map((setting) => (
-            <SettingRow key={setting.key} setting={setting} />
+            <SettingRow key={setting.Key} setting={setting} />
           ))}
         </Panel>
       )}

@@ -1,15 +1,29 @@
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from "axios";
 import { clearTokens, getAccessToken, getRefreshToken, setTokens } from "./tokens";
 import type { Tokens } from "./types";
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://spark-api.tahirali.site";
 
+/**
+ * The API wraps every JSON answer as `{ Success, StatusCode, Data, MetaData }` with
+ * PascalCase keys. This hands the rest of the app just `Data`, still with the API's
+ * PascalCase keys (the types in types.ts match them); files (the CSV export) pass through.
+ */
+function unwrap(response: AxiosResponse) {
+  const body = response.data as { Success?: unknown; Data?: unknown } | null;
+  if (body && typeof body === "object" && body.Success === true && "Data" in body) {
+    response.data = body.Data;
+  }
+  return response;
+}
+
 /** The one shared Axios instance every request goes through. */
 export const api = axios.create({ baseURL: API_URL });
 
 // A bare instance for the refresh call itself, so it can't trigger its own interceptors.
 const bare = axios.create({ baseURL: API_URL });
+bare.interceptors.response.use(unwrap);
 
 type RetryableConfig = InternalAxiosRequestConfig & { _retried?: boolean };
 
@@ -17,7 +31,7 @@ interface SessionHandlers {
   /** The refresh token stopped working: sign the user out in the UI. */
   onExpired: () => void;
   /** A refresh succeeded: the UI can pick up the latest name/role. */
-  onRefreshed: (user: Tokens["user"]) => void;
+  onRefreshed: (user: Tokens["User"]) => void;
 }
 
 let handlers: SessionHandlers | null = null;
@@ -49,7 +63,7 @@ async function requestNewTokens(): Promise<Tokens> {
   try {
     const { data } = await bare.post<Tokens>("/auth/refresh", { refreshToken });
     setTokens(data);
-    handlers?.onRefreshed(data.user);
+    handlers?.onRefreshed(data.User);
     return data;
   } catch (error) {
     clearTokens();
@@ -66,7 +80,7 @@ api.interceptors.request.use((config) => {
 const AUTH_PATHS = ["/auth/login", "/auth/refresh"];
 
 api.interceptors.response.use(
-  (response) => response,
+  unwrap,
   async (error: AxiosError) => {
     const config = error.config as RetryableConfig | undefined;
     const isAuthCall = AUTH_PATHS.some((path) => config?.url?.startsWith(path));
@@ -75,7 +89,7 @@ api.interceptors.response.use(
       config._retried = true;
       try {
         const tokens = await refreshSession();
-        config.headers.set("Authorization", `Bearer ${tokens.accessToken}`);
+        config.headers.set("Authorization", `Bearer ${tokens.AccessToken}`);
         return api(config);
       } catch {
         handlers?.onExpired();

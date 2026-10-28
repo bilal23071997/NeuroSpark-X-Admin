@@ -41,10 +41,10 @@ export default function EpisodesPage() {
   }, [dispatch, statusFilter, seriesFilter]);
 
   async function togglePublish(episode: Episode) {
-    setBusyId(episode.id);
+    setBusyId(episode.Id);
     setActionError(null);
     try {
-      await dispatch((episode.status === "published" ? unpublishEpisode : publishEpisode)(episode.id)).unwrap();
+      await dispatch((episode.Status === "published" ? unpublishEpisode : publishEpisode)(episode.Id)).unwrap();
     } catch (err) {
       setActionError(messageOf(err));
     } finally {
@@ -109,49 +109,49 @@ export default function EpisodesPage() {
               </thead>
               <tbody className="divide-y divide-soft-white/10">
                 {items.map((episode) => (
-                  <tr key={episode.id} className="align-middle">
+                  <tr key={episode.Id} className="align-middle">
                     <td className="px-5 py-4">
-                      <Link href={`/episodes/${episode.id}`} className="font-medium hover:text-indigo-text">
-                        #{episode.episodeNumber} · {episode.title}
+                      <Link href={`/episodes/${episode.Id}`} className="font-medium hover:text-indigo-text">
+                        #{episode.EpisodeNumber} · {episode.Title}
                       </Link>
-                      {episode.isFeatured && (
+                      {episode.IsFeatured && (
                         <span className="ml-2 align-middle">
                           <Badge tone="violet">Featured</Badge>
                         </span>
                       )}
-                      {!episode.youtubeUrl && (
+                      {!episode.YoutubeUrl && (
                         <span className="ml-2 align-middle">
                           <Badge tone="amber">No YouTube link</Badge>
                         </span>
                       )}
                     </td>
                     <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">
-                      {getSeriesName(episode.series)}
+                      {getSeriesName(episode.Series)}
                     </td>
                     <td className="px-5 py-4">
-                      <PublishBadge status={episode.status} />
+                      <PublishBadge status={episode.Status} />
                     </td>
                     <td className="hidden px-5 py-4 text-soft-white/80 lg:table-cell">
-                      {formatDate(episode.publishedAt)}
+                      {formatDate(episode.PublishedAt)}
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex flex-wrap justify-end gap-2">
-                        <ButtonLink href={`/episodes/${episode.id}`} variant="secondary" size="sm">
+                        <ButtonLink href={`/episodes/${episode.Id}`} variant="secondary" size="sm">
                           Edit
                         </ButtonLink>
                         <Button
                           size="sm"
                           variant="secondary"
-                          loading={busyId === episode.id}
-                          disabled={episode.status === "draft" && !episode.youtubeUrl}
+                          loading={busyId === episode.Id}
+                          disabled={episode.Status === "draft" && !episode.YoutubeUrl}
                           title={
-                            episode.status === "draft" && !episode.youtubeUrl
+                            episode.Status === "draft" && !episode.YoutubeUrl
                               ? "Add a YouTube link before publishing"
                               : undefined
                           }
                           onClick={() => togglePublish(episode)}
                         >
-                          {episode.status === "published" ? "Unpublish" : "Publish"}
+                          {episode.Status === "published" ? "Unpublish" : "Publish"}
                         </Button>
                         <Button size="sm" variant="danger" onClick={() => setToDelete(episode)}>
                           Delete
@@ -171,10 +171,10 @@ export default function EpisodesPage() {
         title="Delete this episode?"
         confirmLabel="Delete episode"
         onClose={() => setToDelete(null)}
-        onConfirm={() => dispatch(deleteEpisode(toDelete!.id)).unwrap()}
+        onConfirm={() => dispatch(deleteEpisode(toDelete!.Id)).unwrap()}
       >
         <p>
-          <strong>{toDelete?.title}</strong> will be deleted permanently. This can&apos;t be undone.
+          <strong>{toDelete?.Title}</strong> will be deleted permanently. This can&apos;t be undone.
         </p>
       </ConfirmDialog>
     </>

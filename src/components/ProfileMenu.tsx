@@ -41,7 +41,7 @@ export default function ProfileMenu({ onNavigate }: { onNavigate: () => void }) 
 
   if (!user) return null;
 
-  const initial = (user.name || user.email).trim().charAt(0).toUpperCase();
+  const initial = (user.Name || user.Email).trim().charAt(0).toUpperCase();
 
   async function signOut() {
     await dispatch(logout());
@@ -63,18 +63,18 @@ export default function ProfileMenu({ onNavigate }: { onNavigate: () => void }) 
               {initial}
             </span>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">{user.name}</p>
-              <p className="truncate text-xs text-soft-white/70" title={user.email}>
-                {user.email}
+              <p className="truncate text-sm font-semibold">{user.Name}</p>
+              <p className="truncate text-xs text-soft-white/70" title={user.Email}>
+                {user.Email}
               </p>
               <p className="mt-1.5 inline-block rounded-full bg-deep-violet/30 px-2.5 py-0.5 text-[0.7rem] font-medium text-violet-text capitalize">
-                {user.role}
+                {user.Role}
               </p>
             </div>
           </div>
 
           <ul className="flex flex-col gap-1 border-t border-soft-white/15 p-2">
-            {user.role === "admin" && (
+            {user.Role === "admin" && (
               <li>
                 <Link
                   href="/settings"
@@ -131,8 +131,8 @@ export default function ProfileMenu({ onNavigate }: { onNavigate: () => void }) 
           {initial}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium">{user.name}</span>
-          <span className="block truncate text-xs text-soft-white/60 capitalize">{user.role}</span>
+          <span className="block truncate text-sm font-medium">{user.Name}</span>
+          <span className="block truncate text-xs text-soft-white/60 capitalize">{user.Role}</span>
         </span>
         <ChevronsUpDown aria-hidden strokeWidth={1.75} className="size-4 shrink-0 text-soft-white/55" />
         <span className="sr-only">Account menu</span>

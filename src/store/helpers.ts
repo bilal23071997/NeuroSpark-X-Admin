@@ -50,8 +50,8 @@ export function messageOf(error: unknown) {
   return typeof error === "string" ? error : getErrorMessage(error);
 }
 
-export function upsert<T extends { id: string }>(items: T[], item: T) {
-  const index = items.findIndex((existing) => existing.id === item.id);
+export function upsert<T extends { Id: string }>(items: T[], item: T) {
+  const index = items.findIndex((existing) => existing.Id === item.Id);
   if (index === -1) items.unshift(item);
   else items[index] = item;
 }

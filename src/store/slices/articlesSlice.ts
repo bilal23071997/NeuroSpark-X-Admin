@@ -74,9 +74,9 @@ const articlesSlice = createSlice({
   extraReducers: (builder) => {
     const saved = (state: ArticlesState, article: Article) => {
       // Featuring one article un-features the others, so refresh that flag in the list too.
-      if (article.isFeatured) state.items.forEach((item) => (item.isFeatured = item.id === article.id));
+      if (article.IsFeatured) state.items.forEach((item) => (item.IsFeatured = item.Id === article.Id));
       upsert(state.items, article);
-      if (state.detail.item?.id === article.id) state.detail.item = article;
+      if (state.detail.item?.Id === article.Id) state.detail.item = article;
     };
 
     builder
@@ -106,8 +106,8 @@ const articlesSlice = createSlice({
       .addCase(publishArticle.fulfilled, (state, action) => saved(state, action.payload))
       .addCase(unpublishArticle.fulfilled, (state, action) => saved(state, action.payload))
       .addCase(deleteArticle.fulfilled, (state, action) => {
-        state.items = state.items.filter((article) => article.id !== action.payload);
-        if (state.detail.item?.id === action.payload) state.detail = emptyDetail<Article>();
+        state.items = state.items.filter((article) => article.Id !== action.payload);
+        if (state.detail.item?.Id === action.payload) state.detail = emptyDetail<Article>();
       });
   },
 });

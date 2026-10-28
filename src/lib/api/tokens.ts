@@ -20,10 +20,10 @@ export function getRefreshToken() {
   }
 }
 
-export function setTokens(tokens: { accessToken: string; refreshToken: string }) {
-  accessToken = tokens.accessToken;
+export function setTokens(tokens: { AccessToken: string; RefreshToken: string }) {
+  accessToken = tokens.AccessToken;
   try {
-    window.localStorage.setItem(REFRESH_KEY, tokens.refreshToken);
+    window.localStorage.setItem(REFRESH_KEY, tokens.RefreshToken);
   } catch {
     // Private mode / blocked storage: the session just won't survive a reload.
   }
