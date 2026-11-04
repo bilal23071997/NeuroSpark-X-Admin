@@ -13,6 +13,10 @@ export interface ArticleInput {
   /** `null` clears the field (only meaningful when editing). */
   seoTitle?: string | null;
   seoDescription?: string | null;
+  seoKeywords?: string | null;
+  /** `null` takes the article out of its series. */
+  seriesId?: string | null;
+  seriesOrder?: number | null;
 }
 
 export interface ArticleFilters {

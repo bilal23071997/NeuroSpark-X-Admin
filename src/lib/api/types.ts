@@ -43,6 +43,20 @@ export interface Niche {
   UpdatedAt: string;
 }
 
+export interface Series {
+  Id: string;
+  Slug: string;
+  Name: string;
+  Description: string;
+  Label: string | null;
+  CoverImageUrl: string | null;
+  NicheId: string;
+  Niche: Niche;
+  SortOrder: number;
+  CreatedAt: string;
+  UpdatedAt: string;
+}
+
 export interface Article {
   Id: string;
   Slug: string;
@@ -56,6 +70,9 @@ export interface Article {
   IsFeatured: boolean;
   SeoTitle: string | null;
   SeoDescription: string | null;
+  SeoKeywords: string | null;
+  SeriesId: string | null;
+  SeriesOrder: number | null;
   CreatedAt: string;
   UpdatedAt: string;
 }
@@ -199,7 +216,7 @@ export interface ContactMessage {
 }
 
 export interface SiteSetting {
-  Key: "contactEmail" | "linkverseUrl" | "whatsappUrl" | "telegramUrl";
+  Key: "contactEmail" | "linkverseUrl" | "newsletterUrl" | "whatsappUrl" | "telegramUrl";
   Label: string;
   /** `email` or `url`. */
   Kind: string;
