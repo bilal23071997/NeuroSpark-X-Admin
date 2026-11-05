@@ -13,7 +13,6 @@ import PageHeader, { EmptyState, Panel } from "@/components/ui/PageHeader";
 import RequireAdmin from "@/components/ui/RequireAdmin";
 import { LoadingBlock } from "@/components/ui/Spinner";
 import SortableList from "@/components/ui/SortableList";
-import { Badge } from "@/components/ui/StatusBadge";
 import type { VaultGroup } from "@/lib/api/types";
 import { emptyToUndefined } from "@/lib/format";
 import { optionalSlug } from "@/lib/validation";
@@ -36,11 +35,8 @@ const schema = z.object({
 });
 type FormValues = z.infer<typeof schema>;
 
-/** What the dialog is doing: adding a sub-group (or, with no parent, a new top-level group), editing a group, or editing an official category's description. */
-type Editing =
-  | { mode: "create"; parent: VaultGroup | null }
-  | { mode: "edit"; group: VaultGroup }
-  | { mode: "official"; group: VaultGroup };
+/** What the dialog is doing: adding a sub-group (or, with no parent, a new top-level group), or editing a group. */
+type Editing = { mode: "create"; parent: VaultGroup | null } | { mode: "edit"; group: VaultGroup };
 
 function GroupForm({ editing, parents, onDone }: { editing: Editing; parents: VaultGroup[]; onDone: () => void }) {
   const dispatch = useAppDispatch();
@@ -73,9 +69,6 @@ function GroupForm({ editing, parents, onDone }: { editing: Editing; parents: Va
             parentId: editing.parent?.Id,
           }),
         ).unwrap();
-      } else if (editing.mode === "official") {
-        // An official category only accepts a new description.
-        await dispatch(updateGroup({ id: editing.group.Id, body: { description: values.description.trim() } })).unwrap();
       } else {
         await dispatch(
           updateGroup({
@@ -96,27 +89,16 @@ function GroupForm({ editing, parents, onDone }: { editing: Editing; parents: Va
     }
   }
 
-  const official = editing.mode === "official";
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
       {submitError && <Alert>{submitError}</Alert>}
-      {official ? (
-        <p className="text-sm text-soft-white/80">
-          <strong>{group?.Name}</strong> is one of the five official categories. Its name, address and place can&apos;t
-          change, but you can edit its description.
-        </p>
-      ) : (
-        <>
-          <TextField label="Name" required error={errors.name?.message} {...register("name")} />
-          <TextField
-            label="Slug"
-            error={errors.slug?.message}
-            hint={editing.mode === "edit" ? "Used in web addresses. Changing it breaks old links." : "Leave empty to make it from the name."}
-            {...register("slug")}
-          />
-        </>
-      )}
+      <TextField label="Name" required error={errors.name?.message} {...register("name")} />
+      <TextField
+        label="Slug"
+        error={errors.slug?.message}
+        hint={editing.mode === "edit" ? "Used in web addresses. Changing it breaks old links." : "Leave empty to make it from the name."}
+        {...register("slug")}
+      />
       <TextAreaField label="Description" hint="Optional." error={errors.description?.message} {...register("description")} />
       {editing.mode === "edit" && editing.group.ParentId !== null && (
         <SelectField label="Sits under" hint="Moving a sub-group moves its products with it." {...register("parentId")}>
@@ -165,11 +147,21 @@ function GroupsScreen() {
     }
   }
 
+  async function moveTo(child: VaultGroup, parentId: number) {
+    if (!parentId) return;
+    setReorderError(null);
+    try {
+      await dispatch(updateGroup({ id: child.Id, body: { parentId } })).unwrap();
+    } catch (err) {
+      setReorderError(messageOf(err));
+    }
+  }
+
   return (
     <>
       <PageHeader
         title="Vault groups"
-        description="The five official categories stay fixed at the top. Add your own groups after them, add sub-groups under any group to keep products organised, and drag sub-groups to set their order."
+        description="Rename, split or delete any group. Add sub-groups under a group to keep products organised, drag sub-groups to set their order, and use Move to send a sub-group to another group. The website only shows a sub-group once it has a published product."
         actions={<Button onClick={() => setEditing({ mode: "create", parent: null })}>New group</Button>}
       />
 
@@ -179,7 +171,7 @@ function GroupsScreen() {
         <LoadingBlock />
       ) : items.length === 0 && status !== "failed" ? (
         <Panel>
-          <EmptyState title="No categories found">The five official categories are created by the API on startup.</EmptyState>
+          <EmptyState title="No groups yet">Create the first group with New group.</EmptyState>
         </Panel>
       ) : (
         <div className="flex flex-col gap-6">
@@ -189,34 +181,23 @@ function GroupsScreen() {
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-3">
                     <h2 className="text-lg font-semibold">{category.Name}</h2>
-                    {category.IsOfficial && (
-                      <Badge tone="violet">
-                        <span aria-hidden className="mr-1">🔒</span>Official
-                      </Badge>
-                    )}
                     <span className="text-xs text-soft-white/60">
                       {category.ProductCount} {category.ProductCount === 1 ? "product" : "products"}
                     </span>
                   </div>
-                  {!category.IsOfficial && <p className="mt-0.5 text-xs text-soft-white/60">/{category.Slug}</p>}
+                  <p className="mt-0.5 text-xs text-soft-white/60">/{category.Slug}</p>
                   <p className="mt-1.5 max-w-2xl text-sm text-soft-white/70">{category.Description}</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => setEditing({ mode: category.IsOfficial ? "official" : "edit", group: category })}
-                  >
-                    {category.IsOfficial ? "Edit description" : "Edit"}
+                  <Button size="sm" variant="secondary" onClick={() => setEditing({ mode: "edit", group: category })}>
+                    Edit
                   </Button>
                   <Button size="sm" onClick={() => setEditing({ mode: "create", parent: category })}>
                     Add sub-group
                   </Button>
-                  {!category.IsOfficial && (
-                    <Button size="sm" variant="danger" onClick={() => setToDelete(category)}>
-                      Delete
-                    </Button>
-                  )}
+                  <Button size="sm" variant="danger" onClick={() => setToDelete(category)}>
+                    Delete
+                  </Button>
                 </div>
               </div>
 
@@ -239,6 +220,21 @@ function GroupsScreen() {
                         </p>
                       </div>
                       {controls.buttons}
+                      <select
+                        aria-label={`Move ${child.Name} to another group`}
+                        value=""
+                        onChange={(event) => moveTo(child, Number(event.target.value))}
+                        className="rounded-lg border border-soft-white/15 bg-void-black px-2 py-1.5 text-xs text-soft-white/80"
+                      >
+                        <option value="">Move to…</option>
+                        {items
+                          .filter((parent) => parent.Id !== category.Id)
+                          .map((parent) => (
+                            <option key={parent.Id} value={parent.Id}>
+                              {parent.Name}
+                            </option>
+                          ))}
+                      </select>
                       <div className="flex gap-2">
                         <Button size="sm" variant="secondary" onClick={() => setEditing({ mode: "edit", group: child })}>
                           Edit
@@ -264,11 +260,9 @@ function GroupsScreen() {
             ? editing.parent
               ? `New sub-group in ${editing.parent.Name}`
               : "New group"
-            : editing?.mode === "official"
-              ? "Edit category description"
-              : editing?.group.ParentId === null
-                ? "Edit group"
-                : "Edit sub-group"
+            : editing?.group.ParentId === null
+              ? "Edit group"
+              : "Edit sub-group"
         }
       >
         {editing && (

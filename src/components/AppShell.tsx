@@ -46,7 +46,7 @@ const sections: NavSection[] = [
     items: [
       { label: "Articles", href: "/articles", icon: FileText },
       { label: "Niches", href: "/niches", icon: Tags },
-      { label: "Series", href: "/series", icon: Layers },
+      { label: "Article series", href: "/series", icon: Layers },
     ],
   },
   { title: "Listen", items: [{ label: "Episodes", href: "/episodes", icon: Mic }] },

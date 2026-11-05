@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -147,11 +148,17 @@ function SeriesForm({ series, onDone }: { series: Series | null; onDone: () => v
 export default function SeriesPage() {
   const dispatch = useAppDispatch();
   const { items, status, error } = useAppSelector((state) => state.series);
-  const nichesCount = useAppSelector((state) => state.niches.items.length);
+  const niches = useAppSelector((state) => state.niches.items);
+  const nichesCount = niches.length;
 
   // `undefined` = dialog closed, `null` = creating, a series = editing it.
   const [editing, setEditing] = useState<Series | null | undefined>(undefined);
   const [toDelete, setToDelete] = useState<Series | null>(null);
+
+  // Series grouped under their main section, in the order of the niches.
+  const sections = niches
+    .map((niche) => ({ niche, series: items.filter((item) => item.NicheId === niche.Id) }))
+    .filter((section) => section.series.length > 0);
 
   useEffect(() => {
     dispatch(fetchSeries());
@@ -177,53 +184,72 @@ export default function SeriesPage() {
         </Alert>
       )}
 
-      <Panel className="overflow-hidden">
-        {status === "loading" && items.length === 0 ? (
+      {status === "loading" && items.length === 0 ? (
+        <Panel>
           <LoadingBlock />
-        ) : items.length === 0 && status !== "failed" ? (
-          <EmptyState title="No series yet">
-            A series groups articles in order, e.g. Astrology &gt; Sidereal.
-          </EmptyState>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <caption className="sr-only">Series</caption>
-              <thead className="border-b border-soft-white/10 text-xs text-soft-white/70 uppercase">
-                <tr>
-                  <th scope="col" className="px-5 py-3 font-medium">Name</th>
-                  <th scope="col" className="hidden px-5 py-3 font-medium md:table-cell">Main section</th>
-                  <th scope="col" className="hidden px-5 py-3 font-medium md:table-cell">Label</th>
-                  <th scope="col" className="px-5 py-3 font-medium">Order</th>
-                  <th scope="col" className="px-5 py-3 text-right font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-soft-white/10">
-                {items.map((series) => (
-                  <tr key={series.Id} className="align-middle">
-                    <td className="px-5 py-4">
-                      <span className="font-medium">{series.Name}</span>
-                      <p className="mt-0.5 text-xs text-soft-white/60">/{series.Slug}</p>
-                    </td>
-                    <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">{series.Niche.Name}</td>
-                    <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">{series.Label ?? "—"}</td>
-                    <td className="px-5 py-4 text-soft-white/80">{series.SortOrder}</td>
-                    <td className="px-5 py-4">
-                      <div className="flex justify-end gap-2">
-                        <Button size="sm" variant="secondary" onClick={() => setEditing(series)}>
-                          Edit
-                        </Button>
-                        <Button size="sm" variant="danger" onClick={() => setToDelete(series)}>
-                          Delete
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Panel>
+        </Panel>
+      ) : items.length === 0 && status !== "failed" ? (
+        <Panel>
+          <EmptyState title="No series yet">A series groups articles in order, e.g. Astrology &gt; Sidereal.</EmptyState>
+        </Panel>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {sections.map(({ niche, series }) => (
+            <Panel key={niche.Id} className="overflow-hidden">
+              {/* One collapsible block per main section, so a long list stays easy to scan. */}
+              <details open className="group">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 [&::-webkit-details-marker]:hidden">
+                  <span className="flex items-center gap-3">
+                    <ChevronDown
+                      aria-hidden
+                      className="h-4 w-4 text-soft-white/60 transition-transform group-not-open:-rotate-90"
+                    />
+                    <span className="font-semibold">{niche.Name}</span>
+                  </span>
+                  <span className="text-xs text-soft-white/60">
+                    {series.length} in this section
+                  </span>
+                </summary>
+                <div className="overflow-x-auto border-t border-soft-white/10">
+                  <table className="w-full text-left text-sm">
+                    <caption className="sr-only">Series in {niche.Name}</caption>
+                    <thead className="border-b border-soft-white/10 text-xs text-soft-white/70 uppercase">
+                      <tr>
+                        <th scope="col" className="px-5 py-3 font-medium">Name</th>
+                        <th scope="col" className="hidden px-5 py-3 font-medium md:table-cell">Label</th>
+                        <th scope="col" className="px-5 py-3 font-medium">Order</th>
+                        <th scope="col" className="px-5 py-3 text-right font-medium">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-soft-white/10">
+                      {series.map((item) => (
+                        <tr key={item.Id} className="align-middle">
+                          <td className="px-5 py-4">
+                            <span className="font-medium">{item.Name}</span>
+                            <p className="mt-0.5 text-xs text-soft-white/60">/{item.Slug}</p>
+                          </td>
+                          <td className="hidden px-5 py-4 text-soft-white/80 md:table-cell">{item.Label ?? "—"}</td>
+                          <td className="px-5 py-4 text-soft-white/80">{item.SortOrder}</td>
+                          <td className="px-5 py-4">
+                            <div className="flex justify-end gap-2">
+                              <Button size="sm" variant="secondary" onClick={() => setEditing(item)}>
+                                Edit
+                              </Button>
+                              <Button size="sm" variant="danger" onClick={() => setToDelete(item)}>
+                                Delete
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+            </Panel>
+          ))}
+        </div>
+      )}
 
       <Modal
         open={editing !== undefined}
