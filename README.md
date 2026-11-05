@@ -4,6 +4,8 @@ The admin portal for the NeuroSpark X website: Insights articles and niches, Lis
 
 Next.js (App Router) used as a client-side app · TypeScript · Tailwind · Axios · Redux Toolkit · React Hook Form + Zod.
 
+
+
 ## Run it
 
 1. Start the API (default `http://localhost:3001`; see its README).
